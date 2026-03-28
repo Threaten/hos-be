@@ -1,4 +1,3 @@
-import { format } from 'path'
 import type { CollectionConfig } from 'payload'
 
 const Media: CollectionConfig = {

@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '100mb',
     },
   },
+    async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/admin',
+        permanent: false,
+      },
+    ]
+  },
   images: {
     localPatterns: [
       {
