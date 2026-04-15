@@ -101,6 +101,7 @@ export const Tenants: CollectionConfig = {
     { name: 'menu', type: 'upload', relationTo: 'media', required: false },
     {
       name: 'newMenu',
+      label: 'New Events/Menu',
       type: 'array',
 
       fields: [{ name: 'src', type: 'upload', relationTo: 'media', required: true }],

@@ -4,13 +4,14 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from "sharp";
-
+import { seoPlugin } from '@payloadcms/plugin-seo'
 
 import { Users } from './collections/Users'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { isSuperAdmin } from './access/isSuperAdmin'
 import type { Config } from './payload-types'
 import { getUserTenantIDs } from './utilities/getUserTenantIDs'
+import { generateSeoTitle, generateSeoDescription } from './utilities/seo'
 
 import { Settings } from './globals/Settings'
 import HomeInformation from './globals/HomeInformation'
@@ -38,7 +39,7 @@ export default buildConfig({
       },
     },
     meta: {
-      title: 'Admin Panel',
+      title: 'house of senses Admin Panel',
       icons: [
         {
           rel: 'icon',
@@ -70,7 +71,13 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   plugins: [
-    
+    seoPlugin({
+      collections: ['tenants'],
+      uploadsCollection: 'media',
+      tabbedUI: false,
+      generateTitle: generateSeoTitle,
+      generateDescription: generateSeoDescription,
+    }),
     multiTenantPlugin<Config>({
       collections: {},
       tenantField: {

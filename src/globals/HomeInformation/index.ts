@@ -67,6 +67,12 @@ const HomeInformation: GlobalConfig = {
       relationTo: 'media',
       required: true,
     },
+    {
+      name: 'Background Image (for Mobile)',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+    }
   ],
 }
 
