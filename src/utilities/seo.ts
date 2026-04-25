@@ -63,8 +63,8 @@ export async function getTenantConfig(
       tenantConfigCache.set(cacheKey, config)
       return config
     }
-  } catch (error) {
-    console.warn(`[getTenantConfig] Error fetching tenant ${tenantId}:`, error)
+  } catch {
+    // ignore
   }
 
   tenantConfigCache.set(cacheKey, null)
@@ -98,8 +98,7 @@ export async function generateSeoTitle({ doc }: { doc: Record<string, unknown> }
 
     const combined = `${title} | ${tenantSuffix}`
     return combined.length > 60 ? combined.substring(0, 57) + '...' : combined
-  } catch (error) {
-    console.warn('[generateSeoTitle] Error:', error)
+  } catch {
     return ''
   }
 }
@@ -132,8 +131,7 @@ export async function generateSeoDescription({
     }
 
     return ''
-  } catch (error) {
-    console.warn('[generateSeoDescription] Error:', error)
+  } catch {
     return ''
   }
 }

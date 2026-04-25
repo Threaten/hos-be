@@ -74,7 +74,7 @@ export default buildConfig({
     seoPlugin({
       collections: ['tenants'],
       uploadsCollection: 'media',
-      tabbedUI: false,
+      tabbedUI: true,
       generateTitle: generateSeoTitle,
       generateDescription: generateSeoDescription,
     }),

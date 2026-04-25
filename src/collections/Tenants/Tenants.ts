@@ -73,6 +73,56 @@ export const Tenants: CollectionConfig = {
     { name: 'shortAboutTitle', type: 'text', required: true },
     { name: 'shortAboutText', type: 'text', required: true },
     {
+      name: 'galleryText',
+      label: 'Home Gallery Text',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Subtitle shown beneath the Featured Gallery heading on the home page.',
+        placeholder: 'A glimpse into our culinary world',
+      },
+    },
+    {
+      name: 'ctaTitle',
+      label: 'CTA Title',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Heading in the Call-to-Action section on the home page.',
+        placeholder: 'Experience [Tenant Name] Today',
+      },
+    },
+    {
+      name: 'ctaText',
+      label: 'CTA Text',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Subtext in the Call-to-Action section on the home page.',
+        placeholder: 'Join us for an unforgettable culinary journey',
+      },
+    },
+    {
+      name: 'aboutTitle',
+      label: 'About Us Title',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Large heading shown on the About Us hero image.',
+        placeholder: 'about [tenant name]',
+      },
+    },
+    {
+      name: 'aboutSubtitle',
+      label: 'About Us Subtitle',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Subtitle shown beneath the About Us hero heading.',
+        placeholder: 'A Journey of Culinary Excellence',
+      },
+    },
+    {
       name: 'aboutusHero',
       type: 'upload',
       relationTo: 'media',
@@ -108,6 +158,34 @@ export const Tenants: CollectionConfig = {
     },
     { name: 'logo', type: 'upload', relationTo: 'media', required: false },
     { name: 'address', type: 'text', required: false },
+    {
+      name: 'location',
+      type: 'group',
+      label: 'Location Coordinates',
+      admin: {
+        description: 'Used for geo SEO meta tags and structured data.',
+      },
+      fields: [
+        {
+          name: 'latitude',
+          type: 'number',
+          required: false,
+          admin: {
+            description: 'e.g. 10.7769',
+            step: 0.000001,
+          },
+        },
+        {
+          name: 'longitude',
+          type: 'number',
+          required: false,
+          admin: {
+            description: 'e.g. 106.7009',
+            step: 0.000001,
+          },
+        },
+      ],
+    },
     { name: 'phone', type: 'text', required: false },
     { name: 'email', type: 'text', required: false },
     { name: 'facebook', type: 'text', required: false },
