@@ -201,6 +201,26 @@ export interface Tenant {
   }[];
   shortAboutTitle: string;
   shortAboutText: string;
+  /**
+   * Subtitle shown beneath the Featured Gallery heading on the home page.
+   */
+  galleryText?: string | null;
+  /**
+   * Heading in the Call-to-Action section on the home page.
+   */
+  ctaTitle?: string | null;
+  /**
+   * Subtext in the Call-to-Action section on the home page.
+   */
+  ctaText?: string | null;
+  /**
+   * Large heading shown on the About Us hero image.
+   */
+  aboutTitle?: string | null;
+  /**
+   * Subtitle shown beneath the About Us hero heading.
+   */
+  aboutSubtitle?: string | null;
   aboutusHero: string | Media;
   aboutus?: {
     root: {
@@ -226,6 +246,19 @@ export interface Tenant {
     | null;
   logo?: (string | null) | Media;
   address?: string | null;
+  /**
+   * Used for geo SEO meta tags and structured data.
+   */
+  location?: {
+    /**
+     * e.g. 10.7769
+     */
+    latitude?: number | null;
+    /**
+     * e.g. 106.7009
+     */
+    longitude?: number | null;
+  };
   phone?: string | null;
   email?: string | null;
   facebook?: string | null;
@@ -233,9 +266,36 @@ export interface Tenant {
   tiktok?: string | null;
   youtube?: string | null;
   /**
+   * Words shown in the scrolling text ticker below the hero images. Leave empty to use defaults.
+   */
+  heroMarqueeWords?:
+    | {
+        word: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional announcement banner shown above the topbar on the public site.
+   */
+  topbarNotification?: {
+    enabled?: boolean | null;
+    /**
+     * Short announcement text displayed in the banner.
+     */
+    message?: string | null;
+  };
+  /**
    * If checked, logging in is not required to read. Useful for building public pages.
    */
   allowPublicRead?: boolean | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -521,6 +581,11 @@ export interface TenantsSelect<T extends boolean = true> {
       };
   shortAboutTitle?: T;
   shortAboutText?: T;
+  galleryText?: T;
+  ctaTitle?: T;
+  ctaText?: T;
+  aboutTitle?: T;
+  aboutSubtitle?: T;
   aboutusHero?: T;
   aboutus?: T;
   menu?: T;
@@ -532,13 +597,38 @@ export interface TenantsSelect<T extends boolean = true> {
       };
   logo?: T;
   address?: T;
+  location?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+      };
   phone?: T;
   email?: T;
   facebook?: T;
   instagram?: T;
   tiktok?: T;
   youtube?: T;
+  heroMarqueeWords?:
+    | T
+    | {
+        word?: T;
+        id?: T;
+      };
+  topbarNotification?:
+    | T
+    | {
+        enabled?: T;
+        message?: T;
+      };
   allowPublicRead?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -672,6 +762,7 @@ export interface HomeInformation {
   'Catch Phrase Image 1': string | Media;
   'Catch Phrase 2': string;
   'Catch Phrase Image 2': string | Media;
+  'Background Image (for Mobile)': string | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -703,6 +794,7 @@ export interface HomeInformationSelect<T extends boolean = true> {
   'Catch Phrase Image 1'?: T;
   'Catch Phrase 2'?: T;
   'Catch Phrase Image 2'?: T;
+  'Background Image (for Mobile)'?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

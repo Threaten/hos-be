@@ -193,6 +193,28 @@ export const Tenants: CollectionConfig = {
     { name: 'tiktok', type: 'text', required: false },
     { name: 'youtube', type: 'text', required: false },
     {
+      name: 'heroMarqueeWords',
+      label: 'Hero Ticker Words',
+      type: 'array',
+      required: false,
+      admin: {
+        description:
+          'Words shown in the scrolling text ticker below the hero images. Leave empty to use defaults.',
+      },
+      fields: [{ name: 'word', type: 'text', required: true }],
+    },
+    // {
+    //   name: 'shortAboutMarqueeWords',
+    //   label: 'About Section Marquee Words',
+    //   type: 'array',
+    //   required: false,
+    //   admin: {
+    //     description:
+    //       'Words shown in the scrolling strip at the bottom of the "Our Story" section. Leave empty to use defaults.',
+    //   },
+    //   fields: [{ name: 'word', type: 'text', required: true }],
+    // },
+    {
       name: 'topbarNotification',
       type: 'group',
       label: 'Topbar Notification',
