@@ -193,6 +193,31 @@ export const Tenants: CollectionConfig = {
     { name: 'tiktok', type: 'text', required: false },
     { name: 'youtube', type: 'text', required: false },
     {
+      name: 'topbarNotification',
+      type: 'group',
+      label: 'Topbar Notification',
+      admin: {
+        description: 'Optional announcement banner shown above the topbar on the public site.',
+      },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          label: 'Show notification',
+          defaultValue: false,
+        },
+        {
+          name: 'message',
+          type: 'text',
+          label: 'Notification message',
+          admin: {
+            description: 'Short announcement text displayed in the banner.',
+            condition: (data, siblingData) => siblingData?.enabled,
+          },
+        },
+      ],
+    },
+    {
       name: 'allowPublicRead',
       type: 'checkbox',
       admin: {
