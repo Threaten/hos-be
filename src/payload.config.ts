@@ -22,6 +22,7 @@ import { Customers } from './collections/Customers'
 import { Gallery } from './collections/Gallery'
 import { Reservations } from './collections/Reservations'
 import { ContactMessages } from './collections/ContactMessages'
+import { SpinHistory } from './collections/SpinHistory'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -49,7 +50,7 @@ export default buildConfig({
       ],
     },
   },
-  collections: [Users, Media, Tenants, Customers, Gallery, Reservations, ContactMessages],
+  collections: [Users, Media, Tenants, Customers, Gallery, Reservations, ContactMessages, SpinHistory],
   globals: [Settings, HomeInformation],
   db: mongooseAdapter({
     url: process.env.DATABASE_URL as string,
