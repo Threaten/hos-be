@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
 import {
   FixedToolbarFeature,
@@ -8,14 +8,14 @@ import {
   LinkFeature,
   lexicalEditor,
   EXPERIMENTAL_TableFeature,
-} from '@payloadcms/richtext-lexical'
+} from "@payloadcms/richtext-lexical";
 // import { YoutubeFeature } from "payloadcms-lexical-ext";
 
-import { isSuperAdminAccess } from '@/access/isSuperAdmin'
-import { updateAndDeleteAccess } from './access/updateAndDelete'
+import { isSuperAdminAccess } from "@/access/isSuperAdmin";
+import { updateAndDeleteAccess } from "./access/updateAndDelete";
 
 export const Tenants: CollectionConfig = {
-  slug: 'tenants',
+  slug: "tenants",
   access: {
     create: isSuperAdminAccess,
     delete: updateAndDeleteAccess,
@@ -23,185 +23,244 @@ export const Tenants: CollectionConfig = {
     update: updateAndDeleteAccess,
   },
   admin: {
-    useAsTitle: 'name',
+    useAsTitle: "name",
   },
   fields: [
     {
-      name: 'name',
-      type: 'text',
+      name: "name",
+      type: "text",
       required: true,
     },
     {
-      name: 'domain',
-      type: 'text',
+      name: "domain",
+      type: "text",
       admin: {
-        description: 'Used for domain-based tenant handling',
+        description: "Used for domain-based tenant handling",
       },
     },
     {
-      name: 'heroImagesList',
-      type: 'array',
-      required: true,
-      minRows: 5,
+      name: "mainColor",
+      type: "text",
+      label: "Main Color",
+      admin: {
+        description: "Primary brand color, used for theming the public site.",
+        placeholder: "#FF5733",
+      },
+    },
+    {
+      name: "spinWheelPrizes",
+      type: "array",
+      label: "Spin Wheel Prizes",
+      minRows: 2,
+      maxRows: 12,
+      defaultValue: [
+        { label: "Free Dessert" },
+        { label: "10% Off" },
+        { label: "Free Cocktail" },
+        { label: "5% Off" },
+        { label: "Free Starter" },
+        { label: "3% Off" },
+        { label: "Free Drink" },
+        { label: "Chef's Surprise" },
+      ],
+      admin: {
+        description:
+          "Prizes displayed on this tenant's lucky wheel. Each prize has an equal chance of being selected.",
+      },
       fields: [
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
+          name: "label",
+          type: "text",
+          label: "Prize",
           required: true,
         },
       ],
     },
-    { name: 'heroTitle', type: 'text', required: true },
-    { name: 'heroSubtitle', type: 'text', required: true },
-    { name: 'heroDescription', type: 'textarea', required: true },
     {
-      name: 'shortAboutCollages',
-      type: 'array',
+      name: "heroImagesList",
+      type: "array",
+      required: true,
+      minRows: 5,
+      fields: [
+        {
+          name: "image",
+          type: "upload",
+          relationTo: "media",
+          required: true,
+        },
+      ],
+    },
+    { name: "heroTitle", type: "text", required: true },
+    { name: "heroSubtitle", type: "text", required: true },
+    { name: "heroDescription", type: "textarea", required: true },
+    {
+      name: "shortAboutCollages",
+      type: "array",
       maxRows: 4,
       minRows: 4,
       required: true,
       fields: [
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
+          name: "image",
+          type: "upload",
+          relationTo: "media",
           required: true,
         },
       ],
     },
-    { name: 'shortAboutTitle', type: 'text', required: true },
-    { name: 'shortAboutText', type: 'text', required: true },
+    { name: "shortAboutTitle", type: "text", required: true },
+    { name: "shortAboutText", type: "text", required: true },
     {
-      name: 'galleryText',
-      label: 'Home Gallery Text',
-      type: 'text',
+      name: "galleryTitle",
+      label: "Home Gallery Title",
+      type: "text",
       required: false,
       admin: {
-        description: 'Subtitle shown beneath the Featured Gallery heading on the home page.',
-        placeholder: 'A glimpse into our culinary world',
+        description:
+          "Title shown beneath the Featured Gallery heading on the home page.",
+        placeholder: "A glimpse into our culinary world",
       },
     },
     {
-      name: 'ctaTitle',
-      label: 'CTA Title',
-      type: 'text',
+      name: "galleryText",
+      label: "Home Gallery Text",
+      type: "textarea",
       required: false,
       admin: {
-        description: 'Heading in the Call-to-Action section on the home page.',
-        placeholder: 'Experience [Tenant Name] Today',
+        description:
+          "Subtitle shown beneath the Featured Gallery heading on the home page.",
+        placeholder: "A glimpse into our culinary world",
       },
     },
     {
-      name: 'ctaText',
-      label: 'CTA Text',
-      type: 'text',
+      label: "Home Gallery Image",
+      name: "homeGalleryImage",
+      type: "upload",
+      relationTo: "media",
+      required: false,
+    },
+    {
+      name: "ctaTitle",
+      label: "CTA Title",
+      type: "text",
       required: false,
       admin: {
-        description: 'Subtext in the Call-to-Action section on the home page.',
-        placeholder: 'Join us for an unforgettable culinary journey',
+        description: "Heading in the Call-to-Action section on the home page.",
+        placeholder: "Experience [Tenant Name] Today",
       },
     },
     {
-      name: 'aboutTitle',
-      label: 'About Us Title',
-      type: 'text',
+      name: "ctaText",
+      label: "CTA Text",
+      type: "text",
       required: false,
       admin: {
-        description: 'Large heading shown on the About Us hero image.',
-        placeholder: 'about [tenant name]',
+        description: "Subtext in the Call-to-Action section on the home page.",
+        placeholder: "Join us for an unforgettable culinary journey",
       },
     },
     {
-      name: 'aboutSubtitle',
-      label: 'About Us Subtitle',
-      type: 'text',
+      name: "aboutTitle",
+      label: "About Us Title",
+      type: "text",
       required: false,
       admin: {
-        description: 'Subtitle shown beneath the About Us hero heading.',
-        placeholder: 'A Journey of Culinary Excellence',
+        description: "Large heading shown on the About Us hero image.",
+        placeholder: "about [tenant name]",
       },
     },
     {
-      name: 'aboutusHero',
-      type: 'upload',
-      relationTo: 'media',
+      name: "aboutSubtitle",
+      label: "About Us Subtitle",
+      type: "text",
+      required: false,
+      admin: {
+        description: "Subtitle shown beneath the About Us hero heading.",
+        placeholder: "A Journey of Culinary Excellence",
+      },
+    },
+    {
+      name: "aboutusHero",
+      type: "upload",
+      relationTo: "media",
       required: true,
     },
     {
-      name: 'aboutus',
-      type: 'richText',
+      name: "aboutus",
+      type: "richText",
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => {
           return [
             ...defaultFeatures,
 
             HeadingFeature({
-              enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+              enabledHeadingSizes: ["h1", "h2", "h3", "h4", "h5", "h6"],
             }),
             FixedToolbarFeature({}),
             InlineToolbarFeature(),
             HorizontalRuleFeature(),
             LinkFeature(),
             EXPERIMENTAL_TableFeature(),
-          ]
+          ];
         },
       }),
     },
-    { name: 'menu', type: 'upload', relationTo: 'media', required: false },
+    { name: "menu", type: "upload", relationTo: "media", required: false },
     {
-      name: 'newMenu',
-      label: 'New Events/Menu',
-      type: 'array',
+      name: "newMenu",
+      label: "New Events/Menu",
+      type: "array",
 
-      fields: [{ name: 'src', type: 'upload', relationTo: 'media', required: true }],
+      fields: [
+        { name: "src", type: "upload", relationTo: "media", required: true },
+      ],
     },
-    { name: 'logo', type: 'upload', relationTo: 'media', required: false },
-    { name: 'address', type: 'text', required: false },
+    { name: "logo", type: "upload", relationTo: "media", required: false },
+    { name: "address", type: "text", required: false },
     {
-      name: 'location',
-      type: 'group',
-      label: 'Location Coordinates',
+      name: "location",
+      type: "group",
+      label: "Location Coordinates",
       admin: {
-        description: 'Used for geo SEO meta tags and structured data.',
+        description: "Used for geo SEO meta tags and structured data.",
       },
       fields: [
         {
-          name: 'latitude',
-          type: 'number',
+          name: "latitude",
+          type: "number",
           required: false,
           admin: {
-            description: 'e.g. 10.7769',
+            description: "e.g. 10.7769",
             step: 0.000001,
           },
         },
         {
-          name: 'longitude',
-          type: 'number',
+          name: "longitude",
+          type: "number",
           required: false,
           admin: {
-            description: 'e.g. 106.7009',
+            description: "e.g. 106.7009",
             step: 0.000001,
           },
         },
       ],
     },
-    { name: 'phone', type: 'text', required: false },
-    { name: 'email', type: 'text', required: false },
-    { name: 'facebook', type: 'text', required: false },
-    { name: 'instagram', type: 'text', required: false },
-    { name: 'tiktok', type: 'text', required: false },
-    { name: 'youtube', type: 'text', required: false },
+    { name: "phone", type: "text", required: false },
+    { name: "email", type: "text", required: false },
+    { name: "facebook", type: "text", required: false },
+    { name: "instagram", type: "text", required: false },
+    { name: "tiktok", type: "text", required: false },
+    { name: "youtube", type: "text", required: false },
     {
-      name: 'heroMarqueeWords',
-      label: 'Hero Ticker Words',
-      type: 'array',
+      name: "heroMarqueeWords",
+      label: "Hero Ticker Words",
+      type: "array",
       required: false,
       admin: {
         description:
-          'Words shown in the scrolling text ticker below the hero images. Leave empty to use defaults.',
+          "Words shown in the scrolling text ticker below the hero images. Leave empty to use defaults.",
       },
-      fields: [{ name: 'word', type: 'text', required: true }],
+      fields: [{ name: "word", type: "text", required: true }],
     },
     // {
     //   name: 'shortAboutMarqueeWords',
@@ -215,40 +274,41 @@ export const Tenants: CollectionConfig = {
     //   fields: [{ name: 'word', type: 'text', required: true }],
     // },
     {
-      name: 'topbarNotification',
-      type: 'group',
-      label: 'Topbar Notification',
+      name: "topbarNotification",
+      type: "group",
+      label: "Topbar Notification",
       admin: {
-        description: 'Optional announcement banner shown above the topbar on the public site.',
+        description:
+          "Optional announcement banner shown above the topbar on the public site.",
       },
       fields: [
         {
-          name: 'enabled',
-          type: 'checkbox',
-          label: 'Show notification',
+          name: "enabled",
+          type: "checkbox",
+          label: "Show notification",
           defaultValue: false,
         },
         {
-          name: 'message',
-          type: 'text',
-          label: 'Notification message',
+          name: "message",
+          type: "text",
+          label: "Notification message",
           admin: {
-            description: 'Short announcement text displayed in the banner.',
+            description: "Short announcement text displayed in the banner.",
             condition: (data, siblingData) => siblingData?.enabled,
           },
         },
       ],
     },
     {
-      name: 'allowPublicRead',
-      type: 'checkbox',
+      name: "allowPublicRead",
+      type: "checkbox",
       admin: {
         description:
-          'If checked, logging in is not required to read. Useful for building public pages.',
-        position: 'sidebar',
+          "If checked, logging in is not required to read. Useful for building public pages.",
+        position: "sidebar",
       },
       defaultValue: false,
       index: true,
     },
   ],
-}
+};

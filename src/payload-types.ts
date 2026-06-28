@@ -74,6 +74,7 @@ export interface Config {
     gallery: Gallery;
     reservations: Reservation;
     'contact-messages': ContactMessage;
+    'spin-history': SpinHistory;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -97,6 +98,7 @@ export interface Config {
     gallery: GallerySelect<false> | GallerySelect<true>;
     reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
+    'spin-history': SpinHistorySelect<false> | SpinHistorySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -188,6 +190,19 @@ export interface Tenant {
    * Used for domain-based tenant handling
    */
   domain?: string | null;
+  /**
+   * Primary brand color, used for theming the public site.
+   */
+  mainColor?: string | null;
+  /**
+   * Prizes displayed on this tenant's lucky wheel. Each prize has an equal chance of being selected.
+   */
+  spinWheelPrizes?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
   heroImagesList: {
     image: string | Media;
     id?: string | null;
@@ -202,9 +217,14 @@ export interface Tenant {
   shortAboutTitle: string;
   shortAboutText: string;
   /**
+   * Title shown beneath the Featured Gallery heading on the home page.
+   */
+  galleryTitle?: string | null;
+  /**
    * Subtitle shown beneath the Featured Gallery heading on the home page.
    */
   galleryText?: string | null;
+  homeGalleryImage?: (string | null) | Media;
   /**
    * Heading in the Call-to-Action section on the home page.
    */
@@ -409,6 +429,18 @@ export interface Gallery {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spin-history".
+ */
+export interface SpinHistory {
+  id: string;
+  occurredAt: string;
+  reward: string;
+  branch: string | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -458,6 +490,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contact-messages';
         value: string | ContactMessage;
+      } | null)
+    | ({
+        relationTo: 'spin-history';
+        value: string | SpinHistory;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -564,6 +600,13 @@ export interface MediaSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   domain?: T;
+  mainColor?: T;
+  spinWheelPrizes?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
   heroImagesList?:
     | T
     | {
@@ -581,7 +624,9 @@ export interface TenantsSelect<T extends boolean = true> {
       };
   shortAboutTitle?: T;
   shortAboutText?: T;
+  galleryTitle?: T;
   galleryText?: T;
+  homeGalleryImage?: T;
   ctaTitle?: T;
   ctaText?: T;
   aboutTitle?: T;
@@ -678,6 +723,17 @@ export interface ContactMessagesSelect<T extends boolean = true> {
   message?: T;
   branch?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spin-history_select".
+ */
+export interface SpinHistorySelect<T extends boolean = true> {
+  occurredAt?: T;
+  reward?: T;
+  branch?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,56 +1,80 @@
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
+import { mongooseAdapter } from "@payloadcms/db-mongodb";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import path from "path";
+import { buildConfig } from "payload";
+import { fileURLToPath } from "url";
 import sharp from "sharp";
-import { seoPlugin } from '@payloadcms/plugin-seo'
+import { seoPlugin } from "@payloadcms/plugin-seo";
 
-import { Users } from './collections/Users'
-import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
-import { isSuperAdmin } from './access/isSuperAdmin'
-import type { Config } from './payload-types'
-import { getUserTenantIDs } from './utilities/getUserTenantIDs'
-import { generateSeoTitle, generateSeoDescription } from './utilities/seo'
+import { Users } from "./collections/Users";
+import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
+import { isSuperAdmin } from "./access/isSuperAdmin";
+import type { Config } from "./payload-types";
+import { getUserTenantIDs } from "./utilities/getUserTenantIDs";
+import { generateSeoTitle, generateSeoDescription } from "./utilities/seo";
 
-import { Settings } from './globals/Settings'
-import HomeInformation from './globals/HomeInformation'
+import { Settings } from "./globals/Settings";
+import HomeInformation from "./globals/HomeInformation";
 
-import Media from './collections/Media'
-import { Tenants } from './collections/Tenants/Tenants'
-import { Customers } from './collections/Customers'
-import { Gallery } from './collections/Gallery'
-import { Reservations } from './collections/Reservations'
-import { ContactMessages } from './collections/ContactMessages'
-import { SpinHistory } from './collections/SpinHistory'
+import Media from "./collections/Media";
+import { Tenants } from "./collections/Tenants/Tenants";
+import { Customers } from "./collections/Customers";
+import { Gallery } from "./collections/Gallery";
+import { Reservations } from "./collections/Reservations";
+import { ContactMessages } from "./collections/ContactMessages";
+import { SpinHistory } from "./collections/SpinHistory";
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 // eslint-disable-next-line no-restricted-exports
 export default buildConfig({
   sharp,
+  i18n: {
+    translations: {
+      en: {
+        custom: {
+          // namespace can be anything you want
+          key1: "Translation with {{variable}}", // translation
+        },
+        // override existing translation keys
+        general: {
+          payloadSettings: "Settings",
+        },
+      },
+    },
+  },
   admin: {
-    user: 'users',
+    user: "users",
     components: {
-      beforeDashboard: ['@/components/Dashboard/TodaysReservationsWidget'],
+      beforeDashboard: ["@/components/Dashboard/TodaysReservationsWidget"],
       graphics: {
-        Logo: '@/graphics/Logo/index.tsx#Logos',
-        Icon: '@/graphics/Logo/index.tsx#Logos',
+        Logo: "@/graphics/Logo/index.tsx#Logos",
+        Icon: "@/graphics/Logo/index.tsx#Logos",
       },
     },
     meta: {
-      title: 'house of senses Admin Panel',
+      title: "house of senses Admin Panel",
+      titleSuffix: " | house of senses",
       icons: [
         {
-          rel: 'icon',
-          type: 'image/png',
-          url: '/favicon.png',
+          rel: "icon",
+          type: "image/png",
+          url: "/favicon.png",
         },
       ],
     },
   },
-  collections: [Users, Media, Tenants, Customers, Gallery, Reservations, ContactMessages, SpinHistory],
+  collections: [
+    Users,
+    Media,
+    Tenants,
+    Customers,
+    Gallery,
+    Reservations,
+    ContactMessages,
+    SpinHistory,
+  ],
   globals: [Settings, HomeInformation],
   db: mongooseAdapter({
     url: process.env.DATABASE_URL as string,
@@ -64,17 +88,17 @@ export default buildConfig({
   editor: lexicalEditor({}),
 
   graphQL: {
-    schemaOutputFile: path.resolve(dirname, 'generated-schema.graphql'),
+    schemaOutputFile: path.resolve(dirname, "generated-schema.graphql"),
   },
 
   secret: process.env.PAYLOAD_SECRET as string,
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    outputFile: path.resolve(dirname, "payload-types.ts"),
   },
   plugins: [
     seoPlugin({
-      collections: ['tenants'],
-      uploadsCollection: 'media',
+      collections: ["tenants"],
+      uploadsCollection: "media",
       tabbedUI: true,
       generateTitle: generateSeoTitle,
       generateDescription: generateSeoDescription,
@@ -86,9 +110,9 @@ export default buildConfig({
           read: () => true,
           update: ({ req }) => {
             if (isSuperAdmin(req.user)) {
-              return true
+              return true;
             }
-            return getUserTenantIDs(req.user).length > 0
+            return getUserTenantIDs(req.user).length > 0;
           },
         },
       },
@@ -98,4 +122,4 @@ export default buildConfig({
       userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
   ],
-})
+});
