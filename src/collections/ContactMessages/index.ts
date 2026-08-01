@@ -1,7 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { sendContactTelegramNotification } from '@/hooks/sendTelegramNotification'
 
 export const ContactMessages: CollectionConfig = {
   slug: 'contact-messages',
+  hooks: {
+    afterChange: [sendContactTelegramNotification],
+  },
   access: {
     create: () => true,
     delete: () => true,

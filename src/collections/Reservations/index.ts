@@ -1,7 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { sendReservationTelegramNotification } from '@/hooks/sendTelegramNotification'
 
 export const Reservations: CollectionConfig = {
   slug: 'reservations',
+  hooks: {
+    afterChange: [sendReservationTelegramNotification],
+  },
   access: {
     create: () => true,
     delete: () => true,

@@ -24,6 +24,46 @@ After you click the `Deploy` button above, you'll want to have standalone copy o
 
 That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
 
+### Telegram notifications
+
+New reservations and contact messages can be sent to a Telegram account or group. Add these values to `be/.env` (and to the backend service's production environment):
+
+```env
+TELEGRAM_BOT_TOKEN=123456789:token-from-botfather
+TELEGRAM_CHAT_ID=-1001234567890
+TELEGRAM_TIME_ZONE=Asia/Ho_Chi_Minh
+```
+
+For a direct account, the account must first start a conversation with the bot. For a group, add the bot to the group. To discover the destination ID, send a message to the bot or group and inspect `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`; group IDs are usually negative. Restart the backend after changing environment variables.
+
+If Telegram is temporarily unavailable, the submission is still saved and the backend logs the notification error.
+
+### Zalo notifications
+
+New reservations and contact messages can also be sent through OpenClaw's standard Zalo Bot API channel. This requires a Zalo Bot Platform token and an enabled Zalo plugin on the OpenClaw host.
+
+Install and authenticate the channel on that host:
+
+```sh
+openclaw plugins install @openclaw/zalo
+openclaw config set plugins.entries.zalo.enabled true
+openclaw gateway restart
+```
+
+Configure the bot token on the OpenClaw host and the group destination used by the backend notification hook:
+
+```env
+ZALO_BOT_TOKEN=your-zalo-bot-platform-token
+OPENCLAW_ZALO_TARGET=zalo:zgr-your-group-id
+# Optional remote gateway settings (for example, through an SSH tunnel):
+OPENCLAW_GATEWAY_URL=ws://127.0.0.1:18789
+OPENCLAW_GATEWAY_TOKEN=your-secret-gateway-token
+# Optional when the CLI is not available as `openclaw` on PATH:
+OPENCLAW_EXECUTABLE=/absolute/path/to/openclaw
+```
+
+`OPENCLAW_ZALO_TARGET` accepts a Zalo user ID or a provider-prefixed group target such as `zalo:zgr-...`; the backend removes the provider prefix before passing the group ID to the standard Zalo adapter. The `ZALO_BOT_TOKEN` must also be available to the OpenClaw gateway process; keeping it only in the backend environment does not reconfigure a separately hosted gateway. If OpenClaw is unavailable, the reservation or contact message remains saved and the backend logs the notification error.
+
 #### Docker (Optional)
 
 If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
