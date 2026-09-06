@@ -56,6 +56,11 @@ export const formatReservationNotification = ({
     `Date/time: ${reservationDateTime}`,
     `Guests: ${reservation.numberOfGuests}`,
     `Special requests: ${valueOrFallback(reservation.specialRequests)}`,
+    `Created at: ${new Intl.DateTimeFormat("vn-VN", {
+      dateStyle: "full",
+      timeStyle: "short",
+      timeZone: TELEGRAM_TIME_ZONE,
+    }).format(new Date(reservation.createdAt))}`,
   ].join("\n");
 };
 
