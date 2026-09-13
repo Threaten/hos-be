@@ -54,13 +54,13 @@ export default buildConfig({
       },
     },
     meta: {
-      title: "house of senses Admin Panel",
-      titleSuffix: " | house of senses",
+      title: "House of Senses Admin Panel",
+      titleSuffix: " | House of Senses",
       icons: [
         {
           rel: "icon",
-          type: "image/png",
-          url: "/favicon.png",
+          type: "image/svg+xml",
+          url: "/favicon.svg",
         },
       ],
     },

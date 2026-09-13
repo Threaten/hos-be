@@ -1,30 +1,47 @@
 import React from "react";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { Media } from "@/payload-types";
+import type { Media } from "@/payload-types";
 import Image from "next/image";
 
 export const Logos = async () => {
   const payload = await getPayload({ config });
   const settings = await payload.findGlobal({ slug: "settings" });
-  const lightLogo = settings?.["light-icon"] as Media;
-  const darkLogo = settings?.["dark-icon"] as Media;
+  const light = settings["light-icon"] as Media | null;
+  const dark = settings["dark-icon"] as Media | null;
+  const lightURL = light?.url || dark?.url;
+  const darkURL = dark?.url || light?.url;
 
+  if (!lightURL || !darkURL) {
+    return (
+      <span
+        style={{
+          fontFamily: "Georgia, serif",
+          fontSize: "1.5rem",
+          letterSpacing: "0.06em",
+        }}
+      >
+        house of senses
+      </span>
+    );
+  }
   return (
     <>
       <Image
-        src={lightLogo?.url || ""}
-        alt="Light Logo"
+        src={lightURL}
+        alt="House of Senses"
         width={260}
-        height={260}
-        className={"light-mode-image"}
+        height={100}
+        className="light-mode-image"
+        style={{ objectFit: "contain" }}
       />
       <Image
-        src={darkLogo?.url || ""}
-        alt="Dark Logo"
+        src={darkURL}
+        alt="House of Senses"
         width={260}
-        height={260}
-        className={"dark-mode-image"}
+        height={100}
+        className="dark-mode-image"
+        style={{ objectFit: "contain" }}
       />
     </>
   );

@@ -1,0 +1,9 @@
+.dark-mode-image {
+  display: none;
+}
+[data-theme="dark"] .light-mode-image {
+  display: none;
+}
+[data-theme="dark"] .dark-mode-image {
+  display: block;
+}

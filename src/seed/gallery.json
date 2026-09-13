@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1,
+    "name": "modern-restaurant-interior",
+    "description": "Modern restaurant interior with elegant lighting",
+    "url": "/media/Artboard 11@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Red Bistro",
+    "caption": "Where contemporary design meets culinary excellence",
+    "file": "Artboard 11@2x.webp"
+  },
+  {
+    "id": 2,
+    "name": "fine-dining-table-setting",
+    "description": "Fine dining table setting with wine glasses",
+    "url": "/media/Artboard 11 copy@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Every detail perfected for your special evening",
+    "file": "Artboard 11 copy@2x.webp"
+  },
+  {
+    "id": 3,
+    "name": "gourmet-food-plating",
+    "description": "Gourmet food plating with artistic presentation",
+    "url": "/media/IMG_0045.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Artistry on every plate",
+    "file": "IMG_0045.webp"
+  },
+  {
+    "id": 4,
+    "name": "cozy-restaurant-ambiance",
+    "description": "Cozy restaurant with warm ambiance and wooden furniture",
+    "url": "/media/Artboard 11 copy 2@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Intimate dining in a warm atmosphere",
+    "file": "Artboard 11 copy 2@2x.webp"
+  },
+  {
+    "id": 5,
+    "name": "pasta-dish",
+    "description": "Delicious pasta dish with fresh ingredients",
+    "url": "/media/IMG_0046.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Handcrafted pasta made daily with love",
+    "file": "IMG_0046.webp"
+  },
+  {
+    "id": 6,
+    "name": "outdoor-restaurant-seating",
+    "description": "Outdoor restaurant seating area with plants",
+    "url": "/media/Artboard 11 copy 3@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Al fresco dining under the stars",
+    "file": "Artboard 11 copy 3@2x.webp"
+  },
+  {
+    "id": 7,
+    "name": "chef-preparing-food",
+    "description": "Chef preparing food in professional kitchen",
+    "url": "/media/IMG_0047.JPG",
+    "category": "restaurant",
+    "branch": "Red Bistro",
+    "caption": "Our chefs craft magic in every dish",
+    "file": "IMG_0047.webp"
+  },
+  {
+    "id": 8,
+    "name": "breakfast-brunch-spread",
+    "description": "Beautiful breakfast and brunch spread",
+    "url": "/media/IMG_0048.JPG",
+    "category": "food",
+    "branch": "Blue Bistro",
+    "caption": "Start your morning with a feast",
+    "file": "IMG_0048.webp"
+  },
+  {
+    "id": 9,
+    "name": "elegant-bar-area",
+    "description": "Elegant bar area with bottles and lighting",
+    "url": "/media/Artboard 11 copy 4@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Red Bistro",
+    "caption": "Craft cocktails and fine spirits selection",
+    "file": "Artboard 11 copy 4@2x.webp"
+  },
+  {
+    "id": 10,
+    "name": "artisan-bread-table",
+    "description": "Artisan bread and rustic food display",
+    "url": "/media/IMG_0049.JPG",
+    "category": "food",
+    "branch": "Blue Bistro",
+    "caption": "Freshly baked daily from our ovens",
+    "file": "IMG_0049.webp"
+  },
+  {
+    "id": 11,
+    "name": "steak-dinner",
+    "description": "Perfectly grilled steak with vegetables",
+    "url": "/media/IMG_0050.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Prime cuts cooked to perfection",
+    "file": "IMG_0050.webp"
+  },
+  {
+    "id": 12,
+    "name": "wine-collection",
+    "description": "Extensive wine collection display",
+    "url": "/media/Artboard 11 copy 5@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Curated wines from around the world",
+    "file": "Artboard 11 copy 5@2x.webp"
+  },
+  {
+    "id": 13,
+    "name": "dessert-plating",
+    "description": "Elegant dessert presentation",
+    "url": "/media/IMG_0051.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Sweet endings to memorable meals",
+    "file": "IMG_0051.webp"
+  },
+  {
+    "id": 14,
+    "name": "outdoor-terrace",
+    "description": "Beautiful outdoor terrace seating",
+    "url": "/media/Artboard 11 copy 6@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Dine with a view",
+    "file": "Artboard 11 copy 6@2x.webp"
+  },
+  {
+    "id": 15,
+    "name": "seafood-platter",
+    "description": "Fresh seafood platter",
+    "url": "/media/IMG_0052.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Ocean's finest treasures",
+    "file": "IMG_0052.webp"
+  },
+  {
+    "id": 16,
+    "name": "cocktail-bar",
+    "description": "Mixologist crafting cocktails",
+    "url": "/media/IMG_0053.JPG",
+    "category": "restaurant",
+    "branch": "Blue Bistro",
+    "caption": "Signature cocktails crafted with passion",
+    "file": "IMG_0053.webp"
+  },
+  {
+    "id": 17,
+    "name": "sushi-presentation",
+    "description": "Beautifully arranged sushi platter",
+    "url": "/media/IMG_0054.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Traditional craftsmanship, modern flavors",
+    "file": "IMG_0054.webp"
+  },
+  {
+    "id": 18,
+    "name": "private-dining",
+    "description": "Intimate private dining room",
+    "url": "/media/Artboard 11 copy 7@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Exclusive spaces for special occasions",
+    "file": "Artboard 11 copy 7@2x.webp"
+  },
+  {
+    "id": 19,
+    "name": "burger-gourmet",
+    "description": "Gourmet burger with fresh ingredients",
+    "url": "/media/IMG_0055.JPG",
+    "category": "food",
+    "branch": "Red Bistro",
+    "caption": "Elevated comfort food classics",
+    "file": "IMG_0055.webp"
+  },
+  {
+    "id": 20,
+    "name": "romantic-setting",
+    "description": "Romantic dinner table setting with candles",
+    "url": "/media/Artboard 19@2x.PNG",
+    "category": "restaurant-space",
+    "branch": "Blue Bistro",
+    "caption": "Romance in every moment",
+    "file": "Artboard 19@2x.webp"
+  },
+  {
+    "id": 21,
+    "name": "catering-service",
+    "description": "Professional catering and event service",
+    "url": "/media/Artboard 1@2x.PNG",
+    "category": "restaurant",
+    "branch": "Others",
+    "caption": "Bringing culinary excellence to your events",
+    "file": "Artboard 1@2x.webp"
+  },
+  {
+    "id": 22,
+    "name": "cooking-class",
+    "description": "Interactive cooking classes and workshops",
+    "url": "/media/IMG_0045.JPG",
+    "category": "restaurant",
+    "branch": "Others",
+    "caption": "Learn from our master chefs",
+    "file": "IMG_0045.webp"
+  },
+  {
+    "id": 23,
+    "name": "gift-vouchers",
+    "description": "Gift cards and dining vouchers",
+    "url": "/media/IMG_0046.JPG",
+    "category": "restaurant",
+    "branch": "Others",
+    "caption": "The perfect gift for food lovers",
+    "file": "IMG_0046.webp"
+  },
+  {
+    "id": 24,
+    "name": "team-building",
+    "description": "Corporate events and team building",
+    "url": "/media/IMG_0047.JPG",
+    "category": "restaurant",
+    "branch": "Others",
+    "caption": "Creating memorable corporate experiences",
+    "file": "IMG_0047.webp"
+  },
+  {
+    "id": 25,
+    "name": "seasonal-menu",
+    "description": "Seasonal special menus and promotions",
+    "url": "/media/IMG_0048.JPG",
+    "category": "food",
+    "branch": "Others",
+    "caption": "Celebrating seasonal ingredients",
+    "file": "IMG_0048.webp"
+  }
+]

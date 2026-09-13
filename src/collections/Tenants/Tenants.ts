@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { openingHours } from "./openingHours";
 
 import {
   FixedToolbarFeature,
@@ -24,8 +25,21 @@ export const Tenants: CollectionConfig = {
   },
   admin: {
     useAsTitle: "name",
+    defaultColumns: ["name", "status", "domain"],
   },
   fields: [
+    {
+      name: "status",
+      type: "select",
+      required: true,
+      defaultValue: "open",
+      options: [
+        { label: "Open", value: "open" },
+        { label: "Closed", value: "closed" },
+        { label: "Temporarily closed", value: "temporarily-closed" },
+      ],
+      admin: { position: "sidebar" },
+    },
     {
       name: "name",
       type: "text",
@@ -245,6 +259,7 @@ export const Tenants: CollectionConfig = {
         },
       ],
     },
+    openingHours,
     { name: "phone", type: "text", required: false },
     { name: "email", type: "text", required: false },
     { name: "facebook", type: "text", required: false },

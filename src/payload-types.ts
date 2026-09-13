@@ -185,6 +185,7 @@ export interface User {
  */
 export interface Tenant {
   id: string;
+  status: 'open' | 'closed' | 'temporarily-closed';
   name: string;
   /**
    * Used for domain-based tenant handling
@@ -279,6 +280,10 @@ export interface Tenant {
      */
     longitude?: number | null;
   };
+  /**
+   * One opening-hours description, shown when the branch is open.
+   */
+  openingHours?: string | null;
   phone?: string | null;
   email?: string | null;
   facebook?: string | null;
@@ -598,6 +603,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "tenants_select".
  */
 export interface TenantsSelect<T extends boolean = true> {
+  status?: T;
   name?: T;
   domain?: T;
   mainColor?: T;
@@ -648,6 +654,7 @@ export interface TenantsSelect<T extends boolean = true> {
         latitude?: T;
         longitude?: T;
       };
+  openingHours?: T;
   phone?: T;
   email?: T;
   facebook?: T;

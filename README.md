@@ -93,3 +93,66 @@ That's it! The Docker instance will help you get up and running quickly while al
 ## Questions
 
 If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+
+## House of Senses branding and branch status
+
+The backend opens the House of Senses admin panel at `/`. Its login/navigation
+branding uses the light and dark logos in **Settings**, with a House of Senses
+wordmark when no logo is uploaded. The browser uses the bundled HOS favicon.
+
+Set a branch's **Status** in **Tenants** to Open, Closed, or Temporarily closed.
+New tenants default to Open. The frontend shows closure labels beside branch names
+in the desktop/mobile location lists and reservation, contact, and menu selectors.
+Older tenants without a saved status display as open. Status is informational;
+it does not disable navigation or reservations.
+
+## Seed Red Bistro and Blue Bistro
+
+From `hos-be`, configure `DATABASE_URL` and `PAYLOAD_SECRET` in `.env`, then run:
+
+```sh
+npm run seed
+```
+
+The seed fills every editable public-content field for both branches and both
+globals, including admin light/dark logos and the home logo.
+
+- 10 home quotes (the schema maximum)
+- 10 hero images and 10 event/menu images per branch
+- 12 wheel prizes (the schema maximum) and 12 hero ticker words
+- 4 about collage images (the schema maximum)
+- 10 about paragraphs and 10 gallery records per branch
+- Hero, about, gallery, CTA, SEO, notification, menu, contact, social, and location fields
+
+Photos, branch logos, and gallery captions come from the existing frontend assets.
+About text and quotes are starter copy. Menu PDFs are clearly marked starter menus.
+Missing contact details are seeded with visibly demo addresses, `0000000000`,
+`example.com` email/social URLs, and zero coordinates. Replace those placeholders
+with verified business details before treating them as real contact information.
+The light/dark HOS monograms are bundled with the seed assets.
+
+Assets live in `src/seed/assets`; no frontend checkout or network download is
+needed. Media are matched by their `hos-seed:` caption, branches by domain,
+name, or original logo media (oldest matching branch first), and gallery entries by branch/image. Existing fields are preserved; empty
+fields are filled and short arrays are extended to the counts above without
+duplicating entries. Existing names, closure statuses, and explicit false settings
+are preserved. Rerunning the seed therefore upgrades earlier sparse seed records.
+Run one seed process at a time.
+
+The script does not fabricate customer activity, reservations, contact messages,
+spin history, or administrator credentials and sends no notifications. Create the
+first admin through normal admin setup. The command writes to the configured
+database; use a separate database when previewing starter content.
+
+
+## Tenant opening hours
+
+Edit **Tenants → Opening Hours** to enter one description such as `11:00–22:00`.
+The seed supplies that example for missing values and preserves existing text.
+In the frontend location dropdown and footer, open branches show these hours
+beneath the phone number; closed branches show their status in the same place.
+
+When upgrading from the weekly field, run `npm run migrate:opening-hours`
+before serving the new schema. It backs up old schedules to a private JSON file
+in the system temporary directory and uses each branch's most frequent time
+range as its single opening-hours value. Existing text values are left alone.
