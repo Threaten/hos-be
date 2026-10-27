@@ -1,12 +1,13 @@
 import type { CollectionConfig } from 'payload'
+import { anyone, byTenantRole, createForTenantRole } from '@/access/roles'
 
 export const Gallery: CollectionConfig = {
   slug: 'gallery',
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
-    update: () => true,
+    create: createForTenantRole('branch', 'tenant-admin'),
+    read: anyone,
+    update: byTenantRole('branch', 'tenant-admin'),
+    delete: byTenantRole('branch', 'tenant-admin'),
   },
   admin: {
     useAsTitle: 'image',

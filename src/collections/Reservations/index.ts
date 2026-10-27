@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { anyone, byTenantRole } from '@/access/roles'
 import { sendReservationTelegramNotification } from '@/hooks/sendTelegramNotification'
 
 export const Reservations: CollectionConfig = {
@@ -7,10 +8,11 @@ export const Reservations: CollectionConfig = {
     afterChange: [sendReservationTelegramNotification],
   },
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
-    update: () => true,
+    // Public website submits reservations
+    create: anyone,
+    read: byTenantRole('branch'),
+    update: byTenantRole('branch', 'tenant-admin'),
+    delete: byTenantRole('branch', 'tenant-admin'),
   },
   admin: {
     useAsTitle: 'customer',

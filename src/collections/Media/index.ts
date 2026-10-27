@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { anyone, isAnyTenantAdmin } from '@/access/roles'
 
 const Media: CollectionConfig = {
   slug: 'media',
@@ -11,7 +12,12 @@ const Media: CollectionConfig = {
       format: 'webp',
     },
   },
-  access: { read: () => true },
+  access: {
+    create: isAnyTenantAdmin,
+    read: anyone,
+    update: isAnyTenantAdmin,
+    delete: isAnyTenantAdmin,
+  },
   admin: { useAsTitle: 'filename' },
   fields: [
     { name: 'alt', type: 'text' },

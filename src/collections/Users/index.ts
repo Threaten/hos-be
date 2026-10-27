@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { getUserTenantIDs } from '@/utilities/getUserTenantIDs'
+import { canAccessAdmin } from '@/access/roles'
 
 import { createAccess } from './access/create'
 import { readAccess } from './access/read'
@@ -7,6 +9,7 @@ import { externalUsersLogin } from './endpoints/externalUsersLogin'
 import { ensureUniqueUsername } from './hooks/ensureUniqueUsername'
 import { isSuperAdmin } from '@/access/isSuperAdmin'
 import { setCookieBasedOnDomain } from './hooks/setCookieBasedOnDomain'
+import { restrictTenantAssignment } from './hooks/restrictTenantAssignment'
 import { tenantsArrayField } from '@payloadcms/plugin-multi-tenant/fields'
 
 const defaultTenantArrayField = tenantsArrayField({
@@ -34,7 +37,7 @@ const defaultTenantArrayField = tenantsArrayField({
             return true
           }
 
-          return true
+          return getUserTenantIDs(user, 'tenant-admin').length > 0
         },
       },
     },
@@ -48,6 +51,7 @@ export const Users: CollectionConfig = {
     delete: updateAndDeleteAccess,
     read: readAccess,
     update: updateAndDeleteAccess,
+    admin: canAccessAdmin,
   },
   admin: {
     useAsTitle: 'email',
@@ -113,5 +117,6 @@ export const Users: CollectionConfig = {
 
   hooks: {
     afterLogin: [setCookieBasedOnDomain],
+    beforeChange: [restrictTenantAssignment],
   },
 }

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { anyone, byTenantRole } from '@/access/roles'
 import { sendContactTelegramNotification } from '@/hooks/sendTelegramNotification'
 
 export const ContactMessages: CollectionConfig = {
@@ -7,10 +8,11 @@ export const ContactMessages: CollectionConfig = {
     afterChange: [sendContactTelegramNotification],
   },
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
-    update: () => true,
+    // Public website submits contact messages
+    create: anyone,
+    read: byTenantRole('branch'),
+    update: byTenantRole('branch', 'tenant-admin'),
+    delete: byTenantRole('branch', 'tenant-admin'),
   },
   admin: {
     useAsTitle: 'customer',

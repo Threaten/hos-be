@@ -1,12 +1,14 @@
 import type { CollectionConfig } from 'payload'
+import { anyone, byTenantRole } from '@/access/roles'
 
 export const SpinHistory: CollectionConfig = {
   slug: 'spin-history',
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
+    // Public lucky wheel records spins
+    create: anyone,
+    read: byTenantRole('branch'),
     update: () => false,
+    delete: byTenantRole('branch', 'tenant-admin'),
   },
   admin: {
     useAsTitle: 'reward',

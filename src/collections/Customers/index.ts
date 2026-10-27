@@ -1,12 +1,15 @@
 import type { CollectionConfig } from 'payload'
+import { anyone, isAnyTenantAdmin } from '@/access/roles'
+import { isSuperAdminAccess } from '@/access/isSuperAdmin'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
-    update: () => true,
+    // Public website looks up / creates customers when submitting forms
+    create: anyone,
+    read: anyone,
+    update: isAnyTenantAdmin,
+    delete: isSuperAdminAccess,
   },
   admin: {
     useAsTitle: 'customerName',

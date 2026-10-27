@@ -1,9 +1,12 @@
 import { GlobalConfig } from 'payload'
+import { anyone } from '@/access/roles'
+import { isSuperAdminAccess } from '@/access/isSuperAdmin'
 
 const HomeInformation: GlobalConfig = {
   slug: 'home-information',
   access: {
-    read: () => true,
+    read: anyone,
+    update: isSuperAdminAccess,
   },
   fields: [
     {
