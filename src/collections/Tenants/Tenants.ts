@@ -348,8 +348,8 @@ export const Tenants: CollectionConfig = {
             photos(
               "aboutPhotos",
               "Story photos",
-              "Two photos shown side by side after “How it began”.",
-              { maxRows: 2 },
+              "Shown between the passages of “How it began”, one beside every few paragraphs, in this order. If there are fewer than the story needs, photos from the photo sets fill in.",
+              { maxRows: 12 },
             ),
             {
               name: "aboutus",

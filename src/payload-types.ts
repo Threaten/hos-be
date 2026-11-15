@@ -256,7 +256,7 @@ export interface Tenant {
    */
   aboutusHero: string | Media;
   /**
-   * Two photos shown side by side after “How it began”.
+   * Shown between the passages of “How it began”, one beside every few paragraphs, in this order. If there are fewer than the story needs, photos from the photo sets fill in.
    */
   aboutPhotos?: (string | Media)[] | null;
   aboutus?: {
