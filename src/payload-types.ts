@@ -71,7 +71,6 @@ export interface Config {
     media: Media;
     tenants: Tenant;
     customers: Customer;
-    gallery: Gallery;
     reservations: Reservation;
     'contact-messages': ContactMessage;
     'spin-history': SpinHistory;
@@ -95,7 +94,6 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
-    gallery: GallerySelect<false> | GallerySelect<true>;
     reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     'spin-history': SpinHistorySelect<false> | SpinHistorySelect<true>;
@@ -185,64 +183,82 @@ export interface User {
  */
 export interface Tenant {
   id: string;
-  status: 'open' | 'closed' | 'temporarily-closed';
+  /**
+   * Shown in lowercase as the wordmark in the header and footer, and in the Homes list.
+   */
   name: string;
   /**
-   * Used for domain-based tenant handling
+   * Subdomain of houseofsenses.vn, e.g. red-space → red-space.houseofsenses.vn.
    */
-  domain?: string | null;
+  domain: string;
   /**
-   * Primary brand color, used for theming the public site.
+   * The only accent colour on the site: headline, links, buttons and the menu wheel. Pick something dark enough to read on cream.
    */
   mainColor?: string | null;
   /**
-   * Prizes displayed on this tenant's lucky wheel. Each prize has an equal chance of being selected.
+   * Used on the houseofsenses.vn welcome page and in search/social previews. The branch site itself uses the name as its wordmark.
    */
-  spinWheelPrizes?:
+  logo?: (string | null) | Media;
+  /**
+   * A strip in the branch colour above the header, on every page.
+   */
+  topbarNotification?: {
+    enabled?: boolean | null;
+    /**
+     * Keep it to one short sentence; it wraps on phones.
+     */
+    message?: string | null;
+  };
+  /**
+   * The very large words at the top, shown in lowercase. Use an underscore where the line should break, e.g. red_space.
+   */
+  heroTitle: string;
+  /**
+   * Small capitals beside the headline. Also repeated under the wordmark in the footer.
+   */
+  heroSubtitle: string;
+  /**
+   * Two or three sentences beside the headline, followed by today's hours and the address. Also used as the search description.
+   */
+  heroDescription: string;
+  /**
+   * One sentence, shown large.
+   */
+  shortAboutTitle: string;
+  /**
+   * A line under the statement. Hidden if it repeats the introduction word for word.
+   */
+  shortAboutText: string;
+  /**
+   * Small heading beside the statement, above the Our story / Menu buttons.
+   */
+  galleryTitle?: string | null;
+  galleryText?: string | null;
+  ctaTitle?: string | null;
+  ctaText?: string | null;
+  photoSets?:
     | {
-        label: string;
+        /**
+         * Filter name, e.g. The room, The table, Moments, Private dining.
+         */
+        title: string;
+        /**
+         * Drag to reorder. A photo's Caption (set on the photo itself) shows under it and in the viewer, and doubles as alt text.
+         */
+        photos: (string | Media)[];
         id?: string | null;
       }[]
     | null;
-  heroImagesList: {
-    image: string | Media;
-    id?: string | null;
-  }[];
-  heroTitle: string;
-  heroSubtitle: string;
-  heroDescription: string;
-  shortAboutCollages: {
-    image: string | Media;
-    id?: string | null;
-  }[];
-  shortAboutTitle: string;
-  shortAboutText: string;
-  /**
-   * Title shown beneath the Featured Gallery heading on the home page.
-   */
-  galleryTitle?: string | null;
-  /**
-   * Subtitle shown beneath the Featured Gallery heading on the home page.
-   */
-  galleryText?: string | null;
-  homeGalleryImage?: (string | null) | Media;
-  /**
-   * Heading in the Call-to-Action section on the home page.
-   */
-  ctaTitle?: string | null;
-  /**
-   * Subtext in the Call-to-Action section on the home page.
-   */
-  ctaText?: string | null;
-  /**
-   * Large heading shown on the About Us hero image.
-   */
   aboutTitle?: string | null;
-  /**
-   * Subtitle shown beneath the About Us hero heading.
-   */
   aboutSubtitle?: string | null;
+  /**
+   * Shown wide (16:9) under the headline.
+   */
   aboutusHero: string | Media;
+  /**
+   * Two photos shown side by side after “How it began”.
+   */
+  aboutPhotos?: (string | Media)[] | null;
   aboutus?: {
     root: {
       type: string;
@@ -258,61 +274,58 @@ export interface Tenant {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * A PDF, opened as a flip book on the Menu page. A single image works too.
+   */
   menu?: (string | null) | Media;
+  /**
+   * Optional. Upload each page as an image, in order, to use instead of the file above. Sharper on phones than a PDF.
+   */
+  menuPages?:
+    | {
+        image: string | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Event or new-menu posters. When there is at least one, they open in a pop-up the first time someone visits the home page.
+   */
   newMenu?:
     | {
         src: string | Media;
         id?: string | null;
       }[]
     | null;
-  logo?: (string | null) | Media;
-  address?: string | null;
-  /**
-   * Used for geo SEO meta tags and structured data.
-   */
-  location?: {
-    /**
-     * e.g. 10.7769
-     */
-    latitude?: number | null;
-    /**
-     * e.g. 106.7009
-     */
-    longitude?: number | null;
-  };
   /**
    * One opening-hours description, shown when the branch is open.
    */
   openingHours?: string | null;
+  /**
+   * Also what the footer map and every “directions” link search for.
+   */
+  address?: string | null;
+  /**
+   * Optional. Only used for search engines. Leave both empty unless you have the exact numbers; 0, 0 is cleared on save.
+   */
+  location?: {
+    latitude?: number | null;
+    longitude?: number | null;
+  };
   phone?: string | null;
   email?: string | null;
-  facebook?: string | null;
   instagram?: string | null;
+  facebook?: string | null;
   tiktok?: string | null;
   youtube?: string | null;
   /**
-   * Words shown in the scrolling text ticker below the hero images. Leave empty to use defaults.
+   * One slice of the wheel each, in this order; every slice is equally likely. Keep labels short (two or three words). Name a prize “Try Again” for a no-win slice.
    */
-  heroMarqueeWords?:
+  spinWheelPrizes?:
     | {
-        word: string;
+        label: string;
         id?: string | null;
       }[]
     | null;
-  /**
-   * Optional announcement banner shown above the topbar on the public site.
-   */
-  topbarNotification?: {
-    enabled?: boolean | null;
-    /**
-     * Short announcement text displayed in the banner.
-     */
-    message?: string | null;
-  };
-  /**
-   * If checked, logging in is not required to read. Useful for building public pages.
-   */
-  allowPublicRead?: boolean | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -321,6 +334,14 @@ export interface Tenant {
      */
     image?: (string | null) | Media;
   };
+  /**
+   * “Temporarily closed” shows “We'll be back soon” everywhere instead of today's hours.
+   */
+  status: 'open' | 'closed' | 'temporarily-closed';
+  /**
+   * If checked, logging in is not required to read. Useful for building public pages.
+   */
+  allowPublicRead?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -422,18 +443,6 @@ export interface ContactMessage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery".
- */
-export interface Gallery {
-  id: string;
-  image?: (string | null) | Media;
-  caption?: string | null;
-  branch?: (string | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "spin-history".
  */
 export interface SpinHistory {
@@ -483,10 +492,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'customers';
         value: string | Customer;
-      } | null)
-    | ({
-        relationTo: 'gallery';
-        value: string | Gallery;
       } | null)
     | ({
         relationTo: 'reservations';
@@ -603,50 +608,51 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "tenants_select".
  */
 export interface TenantsSelect<T extends boolean = true> {
-  status?: T;
   name?: T;
   domain?: T;
   mainColor?: T;
-  spinWheelPrizes?:
+  logo?: T;
+  topbarNotification?:
     | T
     | {
-        label?: T;
-        id?: T;
-      };
-  heroImagesList?:
-    | T
-    | {
-        image?: T;
-        id?: T;
+        enabled?: T;
+        message?: T;
       };
   heroTitle?: T;
   heroSubtitle?: T;
   heroDescription?: T;
-  shortAboutCollages?:
+  shortAboutTitle?: T;
+  shortAboutText?: T;
+  galleryTitle?: T;
+  galleryText?: T;
+  ctaTitle?: T;
+  ctaText?: T;
+  photoSets?:
+    | T
+    | {
+        title?: T;
+        photos?: T;
+        id?: T;
+      };
+  aboutTitle?: T;
+  aboutSubtitle?: T;
+  aboutusHero?: T;
+  aboutPhotos?: T;
+  aboutus?: T;
+  menu?: T;
+  menuPages?:
     | T
     | {
         image?: T;
         id?: T;
       };
-  shortAboutTitle?: T;
-  shortAboutText?: T;
-  galleryTitle?: T;
-  galleryText?: T;
-  homeGalleryImage?: T;
-  ctaTitle?: T;
-  ctaText?: T;
-  aboutTitle?: T;
-  aboutSubtitle?: T;
-  aboutusHero?: T;
-  aboutus?: T;
-  menu?: T;
   newMenu?:
     | T
     | {
         src?: T;
         id?: T;
       };
-  logo?: T;
+  openingHours?: T;
   address?: T;
   location?:
     | T
@@ -654,26 +660,18 @@ export interface TenantsSelect<T extends boolean = true> {
         latitude?: T;
         longitude?: T;
       };
-  openingHours?: T;
   phone?: T;
   email?: T;
-  facebook?: T;
   instagram?: T;
+  facebook?: T;
   tiktok?: T;
   youtube?: T;
-  heroMarqueeWords?:
+  spinWheelPrizes?:
     | T
     | {
-        word?: T;
+        label?: T;
         id?: T;
       };
-  topbarNotification?:
-    | T
-    | {
-        enabled?: T;
-        message?: T;
-      };
-  allowPublicRead?: T;
   meta?:
     | T
     | {
@@ -681,6 +679,8 @@ export interface TenantsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  status?: T;
+  allowPublicRead?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -693,17 +693,6 @@ export interface CustomersSelect<T extends boolean = true> {
   customerPhone?: T;
   reservationHistory?: T;
   contactHistory?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery_select".
- */
-export interface GallerySelect<T extends boolean = true> {
-  image?: T;
-  caption?: T;
-  branch?: T;
   updatedAt?: T;
   createdAt?: T;
 }

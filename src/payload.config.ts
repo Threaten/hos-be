@@ -19,7 +19,6 @@ import HomeInformation from "./globals/HomeInformation";
 import Media from "./collections/Media";
 import { Tenants } from "./collections/Tenants/Tenants";
 import { Customers } from "./collections/Customers";
-import { Gallery } from "./collections/Gallery";
 import { Reservations } from "./collections/Reservations";
 import { ContactMessages } from "./collections/ContactMessages";
 import { SpinHistory } from "./collections/SpinHistory";
@@ -70,7 +69,6 @@ export default buildConfig({
     Media,
     Tenants,
     Customers,
-    Gallery,
     Reservations,
     ContactMessages,
     SpinHistory,

@@ -17,7 +17,8 @@
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/index.ts",
-    "migrate:opening-hours": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/simplifyOpeningHours.ts"
+    "migrate:opening-hours": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/simplifyOpeningHours.ts",
+    "migrate:photo-sets": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/migratePhotoSets.ts"
   },
   "dependencies": {
     "@payloadcms/db-mongodb": "latest",

@@ -9,11 +9,18 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { access } from "node:fs/promises";
 import gallery from "./gallery.json";
-import type { Tenant, Gallery } from "../payload-types";
+import type { Tenant } from "../payload-types";
 import { fillMissing } from "./fillMissing";
 
 const assets = fileURLToPath(new URL("./assets/", import.meta.url));
-type ContentCollection = "media" | "tenants" | "gallery";
+type ContentCollection = "media" | "tenants";
+
+/** Photo set each bundled photo belongs to, by its category in gallery.json */
+const SET_FOR_CATEGORY: Record<string, string> = {
+  "restaurant-space": "The room",
+  restaurant: "The room",
+  food: "The table",
+};
 
 async function ensureContent<C extends ContentCollection>(
   payload: Payload,
@@ -33,18 +40,10 @@ async function ensureContent<C extends ContentCollection>(
   if (existing.docs[0]) {
     if (collection === "media") return existing.docs[0];
     const merged = fillMissing(existing.docs[0], data);
-    if (collection === "tenants") {
-      return payload.update({
-        collection: "tenants",
-        id: existing.docs[0].id,
-        data: merged as Partial<Tenant>,
-        overrideAccess: true,
-      });
-    }
     return payload.update({
-      collection: "gallery",
+      collection: "tenants",
       id: existing.docs[0].id,
-      data: merged as Partial<Gallery>,
+      data: merged as Partial<Tenant>,
       overrideAccess: true,
     });
   }
@@ -68,15 +67,16 @@ export async function seed(payload: Payload) {
   const media = new Map<string, string>();
   for (const file of files) {
     const item = gallery.find((item) => item.file === file);
-    const caption = `hos-seed:${file}`;
+    // Uploads are converted to webp, so match either name
+    const stored = file.replace(/\.(png|jpe?g)$/i, ".webp");
     const doc = await ensureContent(
       payload,
       "media",
-      { caption: { equals: caption } },
+      { filename: { in: [file, stored] } },
       {
         alt:
-          item?.description || file.replace(/[-_]/g, " ").replace(".webp", ""),
-        caption,
+          item?.description || file.replace(/[-_]/g, " ").replace(/\.\w+$/, ""),
+        caption: item?.caption,
       },
       path.join(assets, file),
     );
@@ -92,7 +92,7 @@ export async function seed(payload: Payload) {
     const name = color === "red" ? "Red Bistro" : "Blue Bistro";
     const photos = gallery.filter((item) => item.branch === name);
     const description = `Welcome to ${name}, part of House of Senses. Gather around the table for thoughtfully prepared food, warm hospitality, and moments worth sharing.`;
-    const tenant = await ensureContent(
+    await ensureContent(
       payload,
       "tenants",
       {
@@ -108,21 +108,26 @@ export async function seed(payload: Payload) {
         status: "open",
         mainColor: color === "red" ? "#9B2C35" : "#245A81",
         logo: imageID(`${color}-logo.webp`),
-        heroImagesList: photos
-          .slice(0, 10)
-          .map((photo) => ({ image: imageID(photo.file) })),
+        photoSets: ["The room", "The table"]
+          .map((title) => ({
+            title,
+            photos: photos
+              .filter((photo) => SET_FOR_CATEGORY[photo.category] === title)
+              .map((photo) => imageID(photo.file)),
+          }))
+          .filter((set) => set.photos.length > 0),
         heroTitle: name,
         heroSubtitle: "A House of Senses dining experience",
         heroDescription: description,
-        shortAboutCollages: photos
-          .slice(0, 4)
-          .map((photo) => ({ image: imageID(photo.file) })),
+        aboutPhotos: photos
+          .filter((photo) => photo.category === "food")
+          .slice(0, 2)
+          .map((photo) => imageID(photo.file)),
         shortAboutTitle: `Welcome to ${name}`,
         shortAboutText: description,
         galleryTitle: "A glimpse into our culinary world",
         galleryText:
           "Explore our spaces, dishes, and moments around the table.",
-        homeGalleryImage: imageID(photos[4].file),
         ctaTitle: `Experience ${name} Today`,
         ctaText: "Join us for an unforgettable culinary journey.",
         aboutTitle: `About ${name}`,
@@ -169,7 +174,6 @@ export async function seed(payload: Payload) {
         menu: imageID(`${color}-menu.pdf`),
         newMenu: photos.map((photo) => ({ src: imageID(photo.file) })),
         address: `Demo address for ${name} — replace with your street address`,
-        location: { latitude: 0, longitude: 0 },
         openingHours: "11:00–22:00",
         phone: "0000000000",
         email: `${color}-bistro@example.com`,
@@ -191,20 +195,6 @@ export async function seed(payload: Payload) {
           "Free Side Dish",
           "15% Off",
         ].map((label) => ({ label })),
-        heroMarqueeWords: [
-          "Food",
-          "Friends",
-          "Shared moments",
-          "Seasonal flavors",
-          "Warm welcomes",
-          "Around the table",
-          "Fresh ingredients",
-          "Slow evenings",
-          "Good company",
-          "Little celebrations",
-          "Made with care",
-          "House of Senses",
-        ].map((word) => ({ word })),
         topbarNotification: {
           enabled: true,
           message: `Welcome to ${name} — discover our latest menu and reserve your table.`,
@@ -217,23 +207,6 @@ export async function seed(payload: Payload) {
         },
       },
     );
-    for (const photo of photos) {
-      await ensureContent(
-        payload,
-        "gallery",
-        {
-          and: [
-            { branch: { equals: tenant.id } },
-            { image: { equals: imageID(photo.file) } },
-          ],
-        },
-        {
-          branch: tenant.id,
-          image: imageID(photo.file),
-          caption: photo.caption,
-        },
-      );
-    }
     payload.logger.info(`Seeded content for ${name}`);
   }
 
