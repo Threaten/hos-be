@@ -8,7 +8,7 @@ import { extractID } from "@/utilities/extractID";
 import { getUserTenantIDs } from "@/utilities/getUserTenantIDs";
 import type { User, VoucherReason } from "@/payload-types";
 
-import { qrEndpoint, redeemEndpoint, scanEndpoint } from "./endpoints";
+import { fromSpinEndpoint, qrEndpoint, redeemEndpoint, scanEndpoint } from "./endpoints";
 import { staffName } from "./present";
 
 /** The branch a voucher goes to when none is given: the user's only branch */
@@ -70,7 +70,7 @@ export const Vouchers: CollectionConfig = {
       "Create new → pick a reason → Save, then share the QR code with the guest. Staff scan it on the branch website to use it, once.",
   },
   defaultSort: "-issuedAt",
-  endpoints: [scanEndpoint, redeemEndpoint, qrEndpoint],
+  endpoints: [scanEndpoint, redeemEndpoint, qrEndpoint, fromSpinEndpoint],
   hooks: {
     beforeValidate: [
       ({ data, operation, req }) => {

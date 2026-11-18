@@ -118,3 +118,55 @@ export const qrEndpoint: Endpoint = {
     return new Response(svg, { headers })
   },
 }
+
+/**
+ * POST /api/vouchers/from-spin  { branch, prize }
+ *
+ * The lucky wheel calls this when a spin lands on a prize: it issues a
+ * voucher for that prize's "… - from Spin" reason, in the name of the staff
+ * member running the wheel, with the same permissions as issuing one in the
+ * admin. Returns the code and the link the guest's QR code opens.
+ */
+export const fromSpinEndpoint: Endpoint = {
+  path: '/from-spin',
+  method: 'post',
+  handler: async (req) => {
+    if (!req.user) return json({ error: 'Sign in as staff to issue vouchers.' }, 401)
+    const body = (await req.json?.().catch(() => null)) as { branch?: string; prize?: string } | null
+    const branch = body?.branch
+    const prize = body?.prize?.trim()
+    if (!branch || !prize) return json({ error: 'Missing branch or prize.' }, 400)
+
+    const { docs } = await req.payload.find({
+      collection: 'voucher-reasons',
+      where: { and: [{ branch: { equals: branch } }, { source: { equals: 'spin' } }, { offer: { equals: prize } }] },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })
+    if (!docs[0]) return json({ error: `“${prize}” is not on this branch’s wheel any more.` }, 404)
+
+    try {
+      // overrideAccess: false → the usual issuing rules apply to this staff member
+      const voucher = await req.payload.create({
+        collection: 'vouchers',
+        data: { reason: docs[0].id, branch, status: 'active' }, // status and the log are set by the hook
+        depth: 1,
+        overrideAccess: false,
+        req,
+      })
+      const tenant = typeof voucher.branch === 'object' ? (voucher.branch as Tenant) : null
+      return json(
+        {
+          code: voucher.code,
+          title: voucher.title,
+          url: tenant?.domain ? voucherUrl(tenant.domain, voucher.code as string) : null,
+        },
+        201,
+      )
+    } catch {
+      return json({ error: 'You can only issue vouchers for your own branch.' }, 403)
+    }
+  },
+}
