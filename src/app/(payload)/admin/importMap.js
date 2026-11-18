@@ -33,6 +33,7 @@ import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c08
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { default as default_fbe3fe61d3200a2ad5bac6e3f8dd116a } from '@/collections/Reservations/components/CalendarView'
+import { VoucherShare as VoucherShare_4c85ffd5c5f6ee3b54cda48b5d589e4e } from '@/collections/Vouchers/VoucherShare'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { Logos as Logos_6c8490617bef60039b781082d4fedeae } from '@/graphics/Logo/index.tsx'
 import { default as default_547a9abcd3ba8b843a141c6f02f909cf } from '@/components/Dashboard/TodaysReservationsWidget'
@@ -77,6 +78,7 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@/collections/Reservations/components/CalendarView#default": default_fbe3fe61d3200a2ad5bac6e3f8dd116a,
+  "@/collections/Vouchers/VoucherShare#VoucherShare": VoucherShare_4c85ffd5c5f6ee3b54cda48b5d589e4e,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/graphics/Logo/index.tsx#Logos": Logos_6c8490617bef60039b781082d4fedeae,
   "@/components/Dashboard/TodaysReservationsWidget#default": default_547a9abcd3ba8b843a141c6f02f909cf,

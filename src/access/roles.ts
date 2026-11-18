@@ -72,10 +72,11 @@ export const byTenantRole =
   }
 
 /**
- * Create scoped to the tenant set on the incoming document's `field`
+ * Create scoped to the tenant set on the incoming document's `field`.
+ * Without a role, any tenant role (admin or viewer) qualifies.
  */
 export const createForTenantRole =
-  (field: string, role: TenantRole): Access =>
+  (field: string, role?: TenantRole): Access =>
   ({ req, data }) => {
     if (!req.user) {
       return false

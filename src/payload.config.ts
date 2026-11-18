@@ -22,6 +22,8 @@ import { Customers } from "./collections/Customers";
 import { Reservations } from "./collections/Reservations";
 import { ContactMessages } from "./collections/ContactMessages";
 import { SpinHistory } from "./collections/SpinHistory";
+import { Vouchers } from "./collections/Vouchers";
+import { VoucherReasons } from "./collections/VoucherReasons";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -72,6 +74,8 @@ export default buildConfig({
     Reservations,
     ContactMessages,
     SpinHistory,
+    Vouchers,
+    VoucherReasons,
   ],
   globals: [Settings, HomeInformation],
   db: mongooseAdapter({

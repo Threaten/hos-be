@@ -74,6 +74,8 @@ export interface Config {
     reservations: Reservation;
     'contact-messages': ContactMessage;
     'spin-history': SpinHistory;
+    vouchers: Voucher;
+    'voucher-reasons': VoucherReason;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -97,6 +99,8 @@ export interface Config {
     reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     'spin-history': SpinHistorySelect<false> | SpinHistorySelect<true>;
+    vouchers: VouchersSelect<false> | VouchersSelect<true>;
+    'voucher-reasons': VoucherReasonsSelect<false> | VoucherReasonsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -454,6 +458,72 @@ export interface SpinHistory {
   createdAt: string;
 }
 /**
+ * Issue a voucher, then share its QR code or link with the guest. Staff scan it on the branch website to use it; it then cannot be used again.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vouchers".
+ */
+export interface Voucher {
+  id: string;
+  /**
+   * The voucher opens on this branch’s website and only its staff can use it.
+   */
+  branch: string | Tenant;
+  /**
+   * What staff see as soon as they scan it, before using it.
+   */
+  title: string;
+  /**
+   * Shown only after staff press “Use voucher”: what exactly to give or apply.
+   */
+  details?: string | null;
+  /**
+   * Admins manage this list under Vouchers → Voucher reasons.
+   */
+  reason: string | VoucherReason;
+  /**
+   * Optional. Leave empty for no end date.
+   */
+  expiresAt?: string | null;
+  /**
+   * Optional context, e.g. which table or what happened.
+   */
+  note?: string | null;
+  /**
+   * Branch admins can cancel a voucher that has not been used.
+   */
+  status: 'active' | 'used' | 'void';
+  /**
+   * Generated when the voucher is issued.
+   */
+  code?: string | null;
+  reasonLabel?: string | null;
+  issuedBy?: (string | null) | User;
+  issuedByName?: string | null;
+  issuedAt?: string | null;
+  usedBy?: (string | null) | User;
+  usedByName?: string | null;
+  usedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The reasons staff can choose from when issuing a voucher. Removing one does not change vouchers already issued with it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "voucher-reasons".
+ */
+export interface VoucherReason {
+  id: string;
+  label: string;
+  /**
+   * Leave empty to offer this reason at every branch (super admins only).
+   */
+  branch?: (string | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -504,6 +574,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'spin-history';
         value: string | SpinHistory;
+      } | null)
+    | ({
+        relationTo: 'vouchers';
+        value: string | Voucher;
+      } | null)
+    | ({
+        relationTo: 'voucher-reasons';
+        value: string | VoucherReason;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -729,6 +807,39 @@ export interface ContactMessagesSelect<T extends boolean = true> {
 export interface SpinHistorySelect<T extends boolean = true> {
   occurredAt?: T;
   reward?: T;
+  branch?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vouchers_select".
+ */
+export interface VouchersSelect<T extends boolean = true> {
+  branch?: T;
+  title?: T;
+  details?: T;
+  reason?: T;
+  expiresAt?: T;
+  note?: T;
+  status?: T;
+  code?: T;
+  reasonLabel?: T;
+  issuedBy?: T;
+  issuedByName?: T;
+  issuedAt?: T;
+  usedBy?: T;
+  usedByName?: T;
+  usedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "voucher-reasons_select".
+ */
+export interface VoucherReasonsSelect<T extends boolean = true> {
+  label?: T;
   branch?: T;
   updatedAt?: T;
   createdAt?: T;
