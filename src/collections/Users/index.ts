@@ -10,6 +10,14 @@ import { ensureUniqueUsername } from './hooks/ensureUniqueUsername'
 import { isSuperAdmin } from '@/access/isSuperAdmin'
 import { setCookieBasedOnDomain } from './hooks/setCookieBasedOnDomain'
 import { restrictTenantAssignment } from './hooks/restrictTenantAssignment'
+import {
+  SESSION_IDLE_SECONDS,
+  blockDisabledLogin,
+  canToggleDisabled,
+  capSessionLength,
+  endSessionsOnSecurityChange,
+  persistEndedSessions,
+} from './sessions'
 import { tenantsArrayField } from '@payloadcms/plugin-multi-tenant/fields'
 
 const defaultTenantArrayField = tenantsArrayField({
@@ -56,7 +64,8 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
   },
-  auth: true,
+  // Sign-ins last a week from last use, a month at most; see ./sessions.ts
+  auth: { tokenExpiration: SESSION_IDLE_SECONDS, useSessions: true },
   endpoints: [externalUsersLogin],
   fields: [
     {
@@ -96,6 +105,18 @@ export const Users: CollectionConfig = {
       },
     },
     {
+      name: 'disabled',
+      label: 'Account disabled',
+      type: 'checkbox',
+      defaultValue: false,
+      index: true,
+      access: { update: canToggleDisabled, create: canToggleDisabled },
+      admin: {
+        position: 'sidebar',
+        description: 'Signs this person out everywhere straight away and stops them signing in.',
+      },
+    },
+    {
       name: 'username',
       type: 'text',
       hooks: {
@@ -117,6 +138,9 @@ export const Users: CollectionConfig = {
 
   hooks: {
     afterLogin: [setCookieBasedOnDomain],
-    beforeChange: [restrictTenantAssignment],
+    beforeLogin: [blockDisabledLogin],
+    refresh: [capSessionLength],
+    beforeChange: [restrictTenantAssignment, endSessionsOnSecurityChange],
+    afterChange: [persistEndedSessions],
   },
 }

@@ -3,6 +3,8 @@ import type { Collection, Endpoint } from 'payload'
 import { headersWithCors } from '@payloadcms/next/utilities'
 import { APIError, generatePayloadCookie } from 'payload'
 
+import { ACCOUNT_DISABLED_MESSAGE } from '../sessions'
+
 // A custom endpoint that can be reached by POST request
 // at: /api/users/external-users/login
 export const externalUsersLogin: Endpoint = {
@@ -114,6 +116,9 @@ export const externalUsersLogin: Endpoint = {
           true,
         )
       } catch (e) {
+        // The right password on a disabled account: say so. Every other
+        // failure gets the same message, so usernames can't be probed.
+        if (e instanceof APIError && e.message === ACCOUNT_DISABLED_MESSAGE) throw e
         throw new APIError(
           'Unable to login with the provided username and password.',
           400,

@@ -155,6 +155,10 @@ export interface User {
   id: string;
   password?: string | null;
   roles?: ('super-admin' | 'user')[] | null;
+  /**
+   * Signs this person out everywhere straight away and stops them signing in.
+   */
+  disabled?: boolean | null;
   username?: string | null;
   tenants?:
     | {
@@ -636,6 +640,7 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   password?: T;
   roles?: T;
+  disabled?: T;
   username?: T;
   tenants?:
     | T

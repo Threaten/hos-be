@@ -49,6 +49,7 @@ export default buildConfig({
     user: "users",
     components: {
       beforeDashboard: ["@/components/Dashboard/TodaysReservationsWidget"],
+      providers: ["@/components/SessionKeeper#SessionKeeper"],
       graphics: {
         Logo: "@/graphics/Logo/index.tsx#Logos",
         Icon: "@/graphics/Logo/index.tsx#Logos",

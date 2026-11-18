@@ -48,7 +48,7 @@ export const Vouchers: CollectionConfig = {
   slug: 'vouchers',
   labels: { singular: 'Voucher', plural: 'Vouchers' },
   access: {
-    create: canIssue,
+    create: byTenantRole('branch'),,
     read: byTenantRole('branch'),
     update: byTenantRole('branch', 'tenant-admin'),
     delete: isSuperAdminAccess,
