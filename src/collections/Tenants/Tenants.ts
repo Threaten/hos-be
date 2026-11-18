@@ -13,6 +13,7 @@ import {
 
 import { isSuperAdminAccess } from "@/access/isSuperAdmin";
 import { updateAndDeleteAccess } from "./access/updateAndDelete";
+import { syncSpinReasonsAfterChange } from "../VoucherReasons/syncSpinPrizes";
 
 /**
  * A branch ("home") of House of Senses. Each one is served on its own
@@ -57,6 +58,8 @@ export const Tenants: CollectionConfig = {
     defaultColumns: ["name", "status", "domain", "openingHours"],
   },
   hooks: {
+    // Lucky wheel prizes double as voucher reasons ("30% off - from Spin")
+    afterChange: [syncSpinReasonsAfterChange],
     beforeValidate: [
       ({ data }) => {
         // 0,0 is the default the number inputs fall back to, not a real place

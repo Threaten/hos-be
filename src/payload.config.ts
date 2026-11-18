@@ -24,6 +24,7 @@ import { ContactMessages } from "./collections/ContactMessages";
 import { SpinHistory } from "./collections/SpinHistory";
 import { Vouchers } from "./collections/Vouchers";
 import { VoucherReasons } from "./collections/VoucherReasons";
+import { syncSpinReasons } from "./collections/VoucherReasons/syncSpinPrizes";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -87,7 +88,16 @@ export default buildConfig({
   //     connectionString: process.env.POSTGRES_URL,
   //   },
   // }),
-  onInit: async (args) => {},
+  // Bring every branch's spin-prize voucher reasons up to date on start-up
+  // (covers prizes that existed before the reasons were linked to the wheel)
+  onInit: async (payload) => {
+    const { docs } = await payload.find({ collection: "tenants", pagination: false, depth: 0 });
+    for (const tenant of docs) {
+      await syncSpinReasons(payload, tenant).catch((err) =>
+        payload.logger.error({ err }, `Could not sync spin reasons for ${tenant.name}`),
+      );
+    }
+  },
   editor: lexicalEditor({}),
 
   graphQL: {

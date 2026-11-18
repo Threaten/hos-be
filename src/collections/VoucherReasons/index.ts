@@ -17,11 +17,24 @@ const readOwnOrShared: Access = ({ req }) => {
   } as Where
 }
 
+/** Branch admins manage their own reasons; spin prizes are managed on the wheel */
+const manageOwn: Access = (args) => {
+  if (!args.req.user) return false
+  const notSpin: Where = { source: { not_equals: 'spin' } }
+  if (isSuperAdmin(args.req.user)) return notSpin
+  const own = byTenantRole('branch', 'tenant-admin')(args)
+  if (!own) return false
+  return own === true ? notSpin : ({ and: [own, notSpin] } as Where)
+}
+
 /**
  * The list staff pick from when issuing a voucher. Each reason says why the
  * voucher is given ("Birthday") and what the guest gets ("Free dessert"), so
  * issuing one is a single choice. Reasons without a branch are shared by
  * every branch and managed by super admins; a branch's admins manage its own.
+ *
+ * Each branch's lucky wheel prizes appear here too ("30% off - from Spin"),
+ * kept in step with the wheel by ./syncSpinPrizes.ts and only editable there.
  */
 export const VoucherReasons: CollectionConfig = {
   slug: 'voucher-reasons',
@@ -29,15 +42,15 @@ export const VoucherReasons: CollectionConfig = {
   access: {
     read: readOwnOrShared,
     create: createForTenantRole('branch', 'tenant-admin'),
-    update: byTenantRole('branch', 'tenant-admin'),
-    delete: byTenantRole('branch', 'tenant-admin'),
+    update: manageOwn,
+    delete: manageOwn,
   },
   admin: {
     group: 'Vouchers',
     useAsTitle: 'label',
-    defaultColumns: ['label', 'offer', 'branch'],
+    defaultColumns: ['label', 'offer', 'branch', 'source'],
     description:
-      'What staff can choose from when issuing a voucher. Editing or removing a reason does not change vouchers already issued.',
+      'What staff can choose from when issuing a voucher. Lucky wheel prizes are added automatically (“… - from Spin”); change those on the branch’s Lucky wheel tab. Editing or removing a reason does not change vouchers already issued.',
   },
   defaultSort: 'label',
   fields: [
@@ -74,6 +87,25 @@ export const VoucherReasons: CollectionConfig = {
       admin: {
         description: 'Leave empty to offer this reason at every branch (super admins only).',
       },
+    },
+    {
+      name: 'source',
+      type: 'select',
+      defaultValue: 'manual',
+      index: true,
+      options: [
+        { label: 'Added here', value: 'manual' },
+        { label: 'Lucky wheel', value: 'spin' },
+      ],
+      access: { create: () => false, update: () => false },
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'spinPrizeId',
+      type: 'text',
+      index: true,
+      access: { create: () => false, update: () => false },
+      admin: { hidden: true },
     },
   ],
 }

@@ -501,7 +501,7 @@ export interface Voucher {
   createdAt: string;
 }
 /**
- * What staff can choose from when issuing a voucher. Editing or removing a reason does not change vouchers already issued.
+ * What staff can choose from when issuing a voucher. Lucky wheel prizes are added automatically (“… - from Spin”); change those on the branch’s Lucky wheel tab. Editing or removing a reason does not change vouchers already issued.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "voucher-reasons".
@@ -524,6 +524,8 @@ export interface VoucherReason {
    * Leave empty to offer this reason at every branch (super admins only).
    */
   branch?: (string | null) | Tenant;
+  source?: ('manual' | 'spin') | null;
+  spinPrizeId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -846,6 +848,8 @@ export interface VoucherReasonsSelect<T extends boolean = true> {
   offer?: T;
   details?: T;
   branch?: T;
+  source?: T;
+  spinPrizeId?: T;
   updatedAt?: T;
   createdAt?: T;
 }
