@@ -31,8 +31,8 @@ async function voucherForStaff(req: PayloadRequest): Promise<Voucher | Response>
   if (!user) return json({ error: 'Sign in as staff to see this voucher.' }, 401)
   const voucher = await findByCode(req)
   if (!voucher) return json({ error: 'There is no voucher with this code.' }, 404)
-  const branchID = extractID<Tenant>(voucher.branch)
-  if (!isSuperAdmin(user) && !getUserTenantIDs(user).includes(branchID)) {
+  const branchID = voucher.branch ? extractID<Tenant>(voucher.branch) : null
+  if (!isSuperAdmin(user) && (!branchID || !getUserTenantIDs(user).includes(branchID))) {
     return json({ error: 'This voucher belongs to another branch.' }, 403)
   }
   return voucher
@@ -63,7 +63,6 @@ export const redeemEndpoint: Endpoint = {
       const message = {
         used: 'This voucher has already been used.',
         void: 'This voucher has been cancelled.',
-        expired: 'This voucher has expired.',
       }[current.state]
       return json({ error: message, voucher: presentVoucher(voucher, { withDetails: voucher.status === 'used' }) }, 409)
     }

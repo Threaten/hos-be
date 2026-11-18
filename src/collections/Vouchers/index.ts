@@ -1,15 +1,32 @@
 import { randomBytes } from 'node:crypto'
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig } from 'payload'
 import { APIError } from 'payload'
 
-import { isSuperAdminAccess } from '@/access/isSuperAdmin'
-import { byTenantRole, createForTenantRole } from '@/access/roles'
+import { isSuperAdmin, isSuperAdminAccess } from '@/access/isSuperAdmin'
+import { byTenantRole } from '@/access/roles'
 import { extractID } from '@/utilities/extractID'
 import { getUserTenantIDs } from '@/utilities/getUserTenantIDs'
 import type { User, VoucherReason } from '@/payload-types'
 
 import { qrEndpoint, redeemEndpoint, scanEndpoint } from './endpoints'
 import { staffName } from './present'
+
+/** The branch a voucher goes to when none is given: the user's only branch */
+const onlyBranch = (user: User | null | undefined) => {
+  const ids = user ? getUserTenantIDs(user) : []
+  return ids.length === 1 ? ids[0] : undefined
+}
+
+/** Any staff role may issue, for their own branch; one-branch staff needn't name it */
+const canIssue: Access = ({ req, data }) => {
+  const user = req.user as User | null
+  if (!user) return false
+  if (isSuperAdmin(user)) return true
+  const ids = getUserTenantIDs(user)
+  if (!data) return ids.length > 0 // whether to show "Create new"
+  const branch = data.branch ? extractID(data.branch) : onlyBranch(user)
+  return Boolean(branch) && ids.includes(branch as string)
+}
 
 /** Unguessable, URL-safe; it is the voucher's only key */
 const newCode = () => randomBytes(15).toString('base64url')
@@ -31,7 +48,7 @@ export const Vouchers: CollectionConfig = {
   slug: 'vouchers',
   labels: { singular: 'Voucher', plural: 'Vouchers' },
   access: {
-    create: createForTenantRole('branch'),
+    create: canIssue,
     read: byTenantRole('branch'),
     update: byTenantRole('branch', 'tenant-admin'),
     delete: isSuperAdminAccess,
@@ -39,13 +56,19 @@ export const Vouchers: CollectionConfig = {
   admin: {
     group: 'Vouchers',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'branch', 'reasonLabel', 'issuedByName', 'issuedAt', 'usedByName', 'usedAt'],
+    defaultColumns: ['title', 'reasonLabel', 'status', 'branch', 'issuedByName', 'issuedAt', 'usedByName', 'usedAt'],
     description:
-      'Issue a voucher, then share its QR code or link with the guest. Staff scan it on the branch website to use it; it then cannot be used again.',
+      'Create new → pick a reason → Save, then share the QR code with the guest. Staff scan it on the branch website to use it, once.',
   },
   defaultSort: '-issuedAt',
   endpoints: [scanEndpoint, redeemEndpoint, qrEndpoint],
   hooks: {
+    beforeValidate: [
+      ({ data, operation, req }) => {
+        if (operation === 'create' && data && !data.branch) data.branch = onlyBranch(req.user as User | null)
+        return data
+      },
+    ],
     beforeChange: [
       async ({ data, originalDoc, operation, req, context }) => {
         // The redeem endpoint is the only way to mark a voucher used
@@ -73,13 +96,21 @@ export const Vouchers: CollectionConfig = {
           }
         }
 
-        // Keep the reason's wording with the voucher, even if it is later removed
+        // Copy the reason's wording onto the voucher, so editing or removing
+        // the reason later never changes a voucher already issued
         const reasonID = data.reason ? extractID<VoucherReason>(data.reason) : null
         if (reasonID && (operation === 'create' || reasonID !== extractID<VoucherReason>(originalDoc?.reason))) {
           const reason = await req.payload
             .findByID({ collection: 'voucher-reasons', id: reasonID, depth: 0, req })
             .catch(() => null)
-          data.reasonLabel = reason?.label ?? data.reasonLabel ?? null
+          if (!reason) throw new APIError('Choose a reason from the list.', 400, null, true)
+          data.reasonLabel = reason.label
+          data.title = reason.offer
+          data.details = reason.details ?? null
+        } else if (operation === 'update') {
+          data.reasonLabel = originalDoc?.reasonLabel
+          data.title = originalDoc?.title
+          data.details = originalDoc?.details
         }
         return data
       },
@@ -96,73 +127,36 @@ export const Vouchers: CollectionConfig = {
       },
     },
     {
+      name: 'reason',
+      type: 'relationship',
+      relationTo: 'voucher-reasons',
+      required: true,
+      admin: {
+        description: 'Pick a reason and save: the code and QR appear straight away.',
+      },
+      filterOptions: ({ data }) => {
+        const branch = data?.branch ? extractID(data.branch) : null
+        return {
+          or: [
+            ...(branch ? [{ branch: { equals: branch } }] : []),
+            { branch: { exists: false } },
+            { branch: { equals: null } },
+          ],
+        }
+      },
+    },
+    {
       name: 'branch',
       type: 'relationship',
       relationTo: 'tenants',
       required: true,
       index: true,
-      defaultValue: ({ user }: { user?: User | null }) => (user ? getUserTenantIDs(user)[0] : undefined),
+      defaultValue: ({ user }: { user?: User | null }) => onlyBranch(user),
       admin: {
+        // Filled in automatically for staff of a single branch
+        condition: (_data, _sibling, { user }) => !user || getUserTenantIDs(user as User).length !== 1,
         description: 'The voucher opens on this branch’s website and only its staff can use it.',
       },
-    },
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      maxLength: 60,
-      admin: {
-        placeholder: '10% off the bill',
-        description: 'What staff see as soon as they scan it, before using it.',
-      },
-    },
-    {
-      name: 'details',
-      type: 'textarea',
-      admin: {
-        placeholder: 'Take 10% off food and drinks, one table, not with other offers.',
-        description: 'Shown only after staff press “Use voucher”: what exactly to give or apply.',
-      },
-    },
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'reason',
-          type: 'relationship',
-          relationTo: 'voucher-reasons',
-          required: true,
-          admin: {
-            width: '50%',
-            description: 'Admins manage this list under Vouchers → Voucher reasons.',
-          },
-          filterOptions: ({ data }) => {
-            const branch = data?.branch ? extractID(data.branch) : null
-            return {
-              or: [
-                ...(branch ? [{ branch: { equals: branch } }] : []),
-                { branch: { exists: false } },
-                { branch: { equals: null } },
-              ],
-            }
-          },
-        },
-        {
-          name: 'expiresAt',
-          label: 'Valid until',
-          type: 'date',
-          admin: {
-            width: '50%',
-            date: { pickerAppearance: 'dayAndTime', displayFormat: 'dd/MM/yyyy HH:mm' },
-            description: 'Optional. Leave empty for no end date.',
-          },
-        },
-      ],
-    },
-    {
-      name: 'note',
-      type: 'textarea',
-      admin: { description: 'Optional context, e.g. which table or what happened.' },
     },
 
     // ─── Bookkeeping (set by the system) ─────────────────────────────────
@@ -181,6 +175,17 @@ export const Vouchers: CollectionConfig = {
         position: 'sidebar',
         description: 'Branch admins can cancel a voucher that has not been used.',
       },
+    },
+    {
+      name: 'title',
+      label: 'Gives',
+      type: 'text',
+      admin: { position: 'sidebar', readOnly: true, description: 'Copied from the reason when issued.' },
+    },
+    {
+      name: 'details',
+      type: 'textarea',
+      admin: { position: 'sidebar', readOnly: true, condition: (data) => Boolean(data?.details) },
     },
     {
       name: 'code',

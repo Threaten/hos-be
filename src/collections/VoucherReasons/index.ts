@@ -18,9 +18,10 @@ const readOwnOrShared: Access = ({ req }) => {
 }
 
 /**
- * Why a voucher was given ("Birthday", "Apology for a long wait"…). Staff pick
- * one when issuing a voucher. Reasons without a branch are shared by every
- * branch and managed by super admins; a branch's admins manage its own.
+ * The list staff pick from when issuing a voucher. Each reason says why the
+ * voucher is given ("Birthday") and what the guest gets ("Free dessert"), so
+ * issuing one is a single choice. Reasons without a branch are shared by
+ * every branch and managed by super admins; a branch's admins manage its own.
  */
 export const VoucherReasons: CollectionConfig = {
   slug: 'voucher-reasons',
@@ -34,9 +35,9 @@ export const VoucherReasons: CollectionConfig = {
   admin: {
     group: 'Vouchers',
     useAsTitle: 'label',
-    defaultColumns: ['label', 'branch', 'updatedAt'],
+    defaultColumns: ['label', 'offer', 'branch'],
     description:
-      'The reasons staff can choose from when issuing a voucher. Removing one does not change vouchers already issued with it.',
+      'What staff can choose from when issuing a voucher. Editing or removing a reason does not change vouchers already issued.',
   },
   defaultSort: 'label',
   fields: [
@@ -45,7 +46,25 @@ export const VoucherReasons: CollectionConfig = {
       type: 'text',
       required: true,
       maxLength: 60,
-      admin: { placeholder: 'Birthday' },
+      admin: { placeholder: 'Birthday', description: 'Why the voucher is given.' },
+    },
+    {
+      name: 'offer',
+      type: 'text',
+      required: true,
+      maxLength: 60,
+      admin: {
+        placeholder: 'Free dessert',
+        description: 'What the guest gets. Staff see this as soon as they scan the voucher.',
+      },
+    },
+    {
+      name: 'details',
+      type: 'textarea',
+      admin: {
+        placeholder: 'Any dessert from the menu, one per table.',
+        description: 'Optional. Shown to staff only after they press “Use voucher”.',
+      },
     },
     {
       name: 'branch',

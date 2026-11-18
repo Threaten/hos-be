@@ -458,7 +458,7 @@ export interface SpinHistory {
   createdAt: string;
 }
 /**
- * Issue a voucher, then share its QR code or link with the guest. Staff scan it on the branch website to use it; it then cannot be used again.
+ * Create new → pick a reason → Save, then share the QR code with the guest. Staff scan it on the branch website to use it, once.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vouchers".
@@ -466,33 +466,22 @@ export interface SpinHistory {
 export interface Voucher {
   id: string;
   /**
-   * The voucher opens on this branch’s website and only its staff can use it.
-   */
-  branch: string | Tenant;
-  /**
-   * What staff see as soon as they scan it, before using it.
-   */
-  title: string;
-  /**
-   * Shown only after staff press “Use voucher”: what exactly to give or apply.
-   */
-  details?: string | null;
-  /**
-   * Admins manage this list under Vouchers → Voucher reasons.
+   * Pick a reason and save: the code and QR appear straight away.
    */
   reason: string | VoucherReason;
   /**
-   * Optional. Leave empty for no end date.
+   * The voucher opens on this branch’s website and only its staff can use it.
    */
-  expiresAt?: string | null;
-  /**
-   * Optional context, e.g. which table or what happened.
-   */
-  note?: string | null;
+  branch?: (string | null) | Tenant;
   /**
    * Branch admins can cancel a voucher that has not been used.
    */
   status: 'active' | 'used' | 'void';
+  /**
+   * Copied from the reason when issued.
+   */
+  title?: string | null;
+  details?: string | null;
   /**
    * Generated when the voucher is issued.
    */
@@ -508,14 +497,25 @@ export interface Voucher {
   createdAt: string;
 }
 /**
- * The reasons staff can choose from when issuing a voucher. Removing one does not change vouchers already issued with it.
+ * What staff can choose from when issuing a voucher. Editing or removing a reason does not change vouchers already issued.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "voucher-reasons".
  */
 export interface VoucherReason {
   id: string;
+  /**
+   * Why the voucher is given.
+   */
   label: string;
+  /**
+   * What the guest gets. Staff see this as soon as they scan the voucher.
+   */
+  offer: string;
+  /**
+   * Optional. Shown to staff only after they press “Use voucher”.
+   */
+  details?: string | null;
   /**
    * Leave empty to offer this reason at every branch (super admins only).
    */
@@ -816,13 +816,11 @@ export interface SpinHistorySelect<T extends boolean = true> {
  * via the `definition` "vouchers_select".
  */
 export interface VouchersSelect<T extends boolean = true> {
+  reason?: T;
   branch?: T;
+  status?: T;
   title?: T;
   details?: T;
-  reason?: T;
-  expiresAt?: T;
-  note?: T;
-  status?: T;
   code?: T;
   reasonLabel?: T;
   issuedBy?: T;
@@ -840,6 +838,8 @@ export interface VouchersSelect<T extends boolean = true> {
  */
 export interface VoucherReasonsSelect<T extends boolean = true> {
   label?: T;
+  offer?: T;
+  details?: T;
   branch?: T;
   updatedAt?: T;
   createdAt?: T;
