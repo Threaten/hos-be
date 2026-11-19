@@ -31,8 +31,10 @@ const defaultTenantArrayField = tenantsArrayField({
   tenantsArrayFieldName: 'tenants',
   tenantsArrayTenantFieldName: 'tenant',
   tenantsCollectionSlug: 'tenants',
-  arrayFieldAccess: {},
-  tenantFieldAccess: {},
+  // Staff can't add (or remove) branches on any account, their own included;
+  // what account managers may change is checked in restrictTenantAssignment
+  arrayFieldAccess: { create: canManagePeople, update: canManagePeople },
+  tenantFieldAccess: { create: canManagePeople, update: canManagePeople },
   rowFields: [
     {
       name: 'roles',

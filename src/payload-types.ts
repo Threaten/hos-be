@@ -516,6 +516,8 @@ export interface ContactMessage {
   createdAt: string;
 }
 /**
+ * Recorded by the lucky wheel page on each spin. Entries cannot be added or changed here.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "spin-history".
  */
@@ -524,6 +526,8 @@ export interface SpinHistory {
   occurredAt: string;
   reward: string;
   branch: string | Tenant;
+  spunByName?: string | null;
+  spunBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -937,6 +941,8 @@ export interface SpinHistorySelect<T extends boolean = true> {
   occurredAt?: T;
   reward?: T;
   branch?: T;
+  spunByName?: T;
+  spunBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
