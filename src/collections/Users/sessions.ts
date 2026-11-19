@@ -1,7 +1,7 @@
 import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, CollectionBeforeLoginHook, CollectionRefreshHook } from 'payload'
 import { APIError, getFieldsToSign, jwtSign } from 'payload'
 
-import { isSuperAdmin } from '@/access/isSuperAdmin'
+import { can } from '@/access/permissions'
 import type { User } from '@/payload-types'
 
 /**
@@ -86,36 +86,50 @@ export const blockDisabledLogin: CollectionBeforeLoginHook = ({ user }) => {
   return user
 }
 
-/** Disabling an account or changing its password signs it out everywhere */
+/**
+ * Disabling an account or changing its password signs it out everywhere.
+ * Someone changing their own password stays signed in where they did it.
+ */
 export const endSessionsOnSecurityChange: CollectionBeforeChangeHook = ({ data, originalDoc, operation, req, context }) => {
   if (operation !== 'update' || context.keepSessions) return data
   const passwordChanged = typeof data.password === 'string' && data.password.length > 0
   const disabledNow = data.disabled === true && !originalDoc?.disabled
   if (passwordChanged || disabledNow) {
-    data.sessions = []
-    // Tell the after-change hook, which runs once the record is saved
-    req.context.sessionsEnded = true
+    const me = req.user as (User & { _sid?: string }) | null
+    const ownChange = !disabledNow && me?.id === originalDoc?.id && me?._sid
+    // The after-change hook empties the session list once the record is saved
+    req.context.sessionsEnded = { keep: ownChange ? me._sid : null }
   }
   return data
 }
 
-/** Make sure the emptied session list reaches the database */
+/** End the sessions (all, or all but the one kept) */
 export const persistEndedSessions: CollectionAfterChangeHook = async ({ doc, req }) => {
-  if (!req.context.sessionsEnded) return doc
-  req.context.sessionsEnded = false
+  const ended = req.context.sessionsEnded as { keep: string | null } | undefined
+  if (!ended) return doc
+  req.context.sessionsEnded = undefined
+  let sessions: Session[] = []
+  if (ended.keep) {
+    const raw = (await req.payload.db.findOne({
+      collection: 'users',
+      where: { id: { equals: doc.id } },
+      req,
+    })) as unknown as { sessions?: Session[] } | null
+    sessions = (raw?.sessions ?? []).filter((s) => s.id === ended.keep)
+  }
   await req.payload.db.updateOne({
     collection: 'users',
     id: doc.id,
-    data: { sessions: [] },
+    data: { sessions },
     req,
     returning: false,
   })
   return doc
 }
 
-/** Only super admins and branch admins may switch an account off or on, never their own */
+/** Only people who manage accounts may switch one off or on, never their own */
 export const canToggleDisabled = ({ req, id }: { req: { user: unknown }; id?: string | number }) => {
   const user = req.user as User | null
   if (!user || id === user.id) return false
-  return isSuperAdmin(user) || (user.tenants ?? []).some((t) => t.roles.includes('tenant-admin'))
+  return can(user, 'users', 'update')
 }

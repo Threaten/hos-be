@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { anyone, byTenantRole } from '@/access/roles'
+import { allowAt, allowCreateAt, hideUnless } from '@/access/permissions'
 import { sendReservationTelegramNotification } from '@/hooks/sendTelegramNotification'
 
 export const Reservations: CollectionConfig = {
@@ -9,13 +9,15 @@ export const Reservations: CollectionConfig = {
   },
   access: {
     // Public website submits reservations
-    create: anyone,
-    read: byTenantRole('branch'),
-    update: byTenantRole('branch', 'tenant-admin'),
-    delete: byTenantRole('branch', 'tenant-admin'),
+    // (signed-in people need the permission at that branch)
+    create: (args) => !args.req.user || allowCreateAt('reservations')(args),
+    read: allowAt('reservations', 'read'),
+    update: allowAt('reservations', 'update'),
+    delete: allowAt('reservations', 'delete'),
   },
   admin: {
     useAsTitle: 'customer',
+    hidden: hideUnless('reservations'),
     defaultColumns: [
       'customer',
       'reservationDateTime',

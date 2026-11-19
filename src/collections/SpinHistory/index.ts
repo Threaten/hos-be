@@ -1,17 +1,19 @@
 import type { CollectionConfig } from 'payload'
-import { anyone, byTenantRole } from '@/access/roles'
+import { anyone } from '@/access/roles'
+import { allowAt, hideUnless } from '@/access/permissions'
 
 export const SpinHistory: CollectionConfig = {
   slug: 'spin-history',
   access: {
     // Public lucky wheel records spins
     create: anyone,
-    read: byTenantRole('branch'),
+    read: allowAt('spinHistory', 'read'),
     update: () => false,
-    delete: byTenantRole('branch', 'tenant-admin'),
+    delete: allowAt('spinHistory', 'delete'),
   },
   admin: {
     useAsTitle: 'reward',
+    hidden: hideUnless('spinHistory'),
     defaultColumns: ['occurredAt', 'reward', 'branch'],
   },
   fields: [

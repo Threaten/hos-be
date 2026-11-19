@@ -3,7 +3,7 @@ import type { Endpoint, PayloadRequest } from 'payload'
 import { isSuperAdmin } from '@/access/isSuperAdmin'
 import type { Tenant, User, Voucher } from '@/payload-types'
 import { extractID } from '@/utilities/extractID'
-import { getUserTenantIDs } from '@/utilities/getUserTenantIDs'
+import { can } from '@/access/permissions'
 import { qrSvg, voucherUrl } from '@/utilities/voucherLink'
 
 import { presentVoucher, staffName } from './present'
@@ -25,15 +25,18 @@ async function findByCode(req: PayloadRequest): Promise<Voucher | null> {
   return docs[0] ?? null
 }
 
-/** The voucher, if the signed-in user is staff at its branch; otherwise an error response */
-async function voucherForStaff(req: PayloadRequest): Promise<Voucher | Response> {
+/** The voucher, if the signed-in user may see or use vouchers at its branch; otherwise an error response */
+async function voucherForStaff(req: PayloadRequest, action: 'read' | 'use' = 'read'): Promise<Voucher | Response> {
   const user = req.user as User | null
   if (!user) return json({ error: 'Sign in as staff to see this voucher.' }, 401)
   const voucher = await findByCode(req)
   if (!voucher) return json({ error: 'There is no voucher with this code.' }, 404)
   const branchID = voucher.branch ? extractID<Tenant>(voucher.branch) : null
-  if (!isSuperAdmin(user) && (!branchID || !getUserTenantIDs(user).includes(branchID))) {
+  if (!isSuperAdmin(user) && !can(user, 'vouchers', 'read', branchID) && !can(user, 'vouchers', 'use', branchID)) {
     return json({ error: 'This voucher belongs to another branch.' }, 403)
+  }
+  if (action === 'use' && !can(user, 'vouchers', 'use', branchID)) {
+    return json({ error: 'Your account isn’t allowed to use vouchers. Ask a branch admin.' }, 403)
   }
   return voucher
 }
@@ -54,7 +57,7 @@ export const redeemEndpoint: Endpoint = {
   path: '/redeem/:code',
   method: 'post',
   handler: async (req) => {
-    const voucher = await voucherForStaff(req)
+    const voucher = await voucherForStaff(req, 'use')
     if (voucher instanceof Response) return voucher
     const user = req.user as User
 
@@ -166,7 +169,7 @@ export const fromSpinEndpoint: Endpoint = {
         201,
       )
     } catch {
-      return json({ error: 'You can only issue vouchers for your own branch.' }, 403)
+      return json({ error: 'Your account isn’t allowed to issue vouchers at this branch.' }, 403)
     }
   },
 }

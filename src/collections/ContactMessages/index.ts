@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
-import { anyone, byTenantRole } from '@/access/roles'
+import { anyone } from '@/access/roles'
+import { allowAt, hideUnless } from '@/access/permissions'
 import { sendContactTelegramNotification } from '@/hooks/sendTelegramNotification'
 
 export const ContactMessages: CollectionConfig = {
@@ -10,12 +11,13 @@ export const ContactMessages: CollectionConfig = {
   access: {
     // Public website submits contact messages
     create: anyone,
-    read: byTenantRole('branch'),
-    update: byTenantRole('branch', 'tenant-admin'),
-    delete: byTenantRole('branch', 'tenant-admin'),
+    read: allowAt('contactMessages', 'read'),
+    update: allowAt('contactMessages', 'update'),
+    delete: allowAt('contactMessages', 'delete'),
   },
   admin: {
     useAsTitle: 'customer',
+    hidden: hideUnless('contactMessages'),
   },
   fields: [
     {

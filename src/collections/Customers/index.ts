@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
-import { anyone, isAnyTenantAdmin } from '@/access/roles'
-import { isSuperAdminAccess } from '@/access/isSuperAdmin'
+import { anyone } from '@/access/roles'
+import { allowAnywhere } from '@/access/permissions'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
@@ -8,8 +8,8 @@ export const Customers: CollectionConfig = {
     // Public website looks up / creates customers when submitting forms
     create: anyone,
     read: anyone,
-    update: isAnyTenantAdmin,
-    delete: isSuperAdminAccess,
+    update: allowAnywhere('customers', 'update'),
+    delete: allowAnywhere('customers', 'delete'),
   },
   admin: {
     useAsTitle: 'customerName',

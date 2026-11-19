@@ -2,27 +2,26 @@ import { randomBytes } from "node:crypto";
 import type { Access, CollectionConfig } from "payload";
 import { APIError } from "payload";
 
-import { isSuperAdmin, isSuperAdminAccess } from "@/access/isSuperAdmin";
-import { byTenantRole } from "@/access/roles";
+import { isSuperAdmin } from "@/access/isSuperAdmin";
 import { extractID } from "@/utilities/extractID";
-import { getUserTenantIDs } from "@/utilities/getUserTenantIDs";
+import { allowAt, branchesWhere, hideUnless } from "@/access/permissions";
 import type { User, VoucherReason } from "@/payload-types";
 
 import { fromSpinEndpoint, qrEndpoint, redeemEndpoint, scanEndpoint } from "./endpoints";
 import { staffName } from "./present";
 
-/** The branch a voucher goes to when none is given: the user's only branch */
+/** The branch a voucher goes to when none is given: the only one where the user may issue */
 const onlyBranch = (user: User | null | undefined) => {
-  const ids = user ? getUserTenantIDs(user) : [];
+  const ids = branchesWhere(user, "vouchers", "create");
   return ids.length === 1 ? ids[0] : undefined;
 };
 
-/** Any staff role may issue, for their own branch; one-branch staff needn't name it */
+/** People allowed to issue vouchers, for those branches; with just one, they needn't name it */
 const canIssue: Access = ({ req, data }) => {
   const user = req.user as User | null;
   if (!user) return false;
   if (isSuperAdmin(user)) return true;
-  const ids = getUserTenantIDs(user);
+  const ids = branchesWhere(user, "vouchers", "create");
   if (!data) return ids.length > 0; // whether to show "Create new"
   const branch = data.branch ? extractID(data.branch) : onlyBranch(user);
   return Boolean(branch) && ids.includes(branch as string);
@@ -48,14 +47,15 @@ export const Vouchers: CollectionConfig = {
   slug: "vouchers",
   labels: { singular: "Voucher", plural: "Vouchers" },
   access: {
-    create: byTenantRole("branch"),
-    read: byTenantRole("branch"),
-    update: byTenantRole("branch", "tenant-admin"),
-    delete: isSuperAdminAccess,
+    create: canIssue,
+    read: allowAt("vouchers", "read"),
+    update: allowAt("vouchers", "update"),
+    delete: allowAt("vouchers", "delete"),
   },
   admin: {
     group: "Vouchers",
     useAsTitle: "title",
+    hidden: hideUnless("vouchers"),
     defaultColumns: [
       "title",
       "reasonLabel",
@@ -204,7 +204,7 @@ export const Vouchers: CollectionConfig = {
       admin: {
         // Filled in automatically for staff of a single branch
         condition: (_data, _sibling, { user }) =>
-          !user || getUserTenantIDs(user as User).length !== 1,
+          !user || isSuperAdmin(user as User) || branchesWhere(user as User, "vouchers", "create").length !== 1,
         description:
           "The voucher opens on this branch’s website and only its staff can use it.",
       },
@@ -225,7 +225,7 @@ export const Vouchers: CollectionConfig = {
       admin: {
         position: "sidebar",
         description:
-          "Branch admins can cancel a voucher that has not been used.",
+          "A voucher that has not been used can be cancelled.",
       },
     },
     {

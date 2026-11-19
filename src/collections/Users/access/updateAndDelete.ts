@@ -1,9 +1,10 @@
 import type { Access } from 'payload'
 
-import { getUserTenantIDs } from '../../../utilities/getUserTenantIDs'
 import { isSuperAdmin } from '@/access/isSuperAdmin'
+import { branchesWhere } from '@/access/permissions'
 import { isAccessingSelf } from './isAccessingSelf'
 
+/** Your own account (field rules limit what you may change), or people at branches where you manage accounts */
 export const updateAndDeleteAccess: Access = ({ req, id }) => {
   const { user } = req
 
@@ -15,17 +16,19 @@ export const updateAndDeleteAccess: Access = ({ req, id }) => {
     return true
   }
 
-  /**
-   * Constrains update and delete access to users that belong
-   * to the same tenant as the tenant-admin making the request
-   *
-   * You may want to take this a step further with a beforeChange
-   * hook to ensure that the a tenant-admin can only remove users
-   * from their own tenant in the tenants array.
-   */
-  return {
-    'tenants.tenant': {
-      in: getUserTenantIDs(user, 'tenant-admin'),
-    },
+  const branches = branchesWhere(user, 'users', 'update')
+  return branches.length ? { 'tenants.tenant': { in: branches } } : false
+}
+
+/** Nobody deletes their own account; account managers delete people at their branches */
+export const deleteAccess: Access = ({ req, id }) => {
+  const { user } = req
+  if (!user || isAccessingSelf({ user, id })) {
+    return false
   }
+  if (isSuperAdmin(user)) {
+    return true
+  }
+  const branches = branchesWhere(user, 'users', 'delete')
+  return branches.length ? { 'tenants.tenant': { in: branches } } : false
 }

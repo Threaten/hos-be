@@ -13,6 +13,7 @@ import {
 
 import { isSuperAdminAccess } from "@/access/isSuperAdmin";
 import { updateAndDeleteAccess } from "./access/updateAndDelete";
+import { hideUnless } from "@/access/permissions";
 import { syncSpinReasonsAfterChange } from "../VoucherReasons/syncSpinPrizes";
 
 /**
@@ -49,13 +50,15 @@ export const Tenants: CollectionConfig = {
   labels: { singular: "Branch", plural: "Branches" },
   access: {
     create: isSuperAdminAccess,
-    delete: updateAndDeleteAccess,
+    // Removing a whole branch is for super admins
+    delete: isSuperAdminAccess,
     read: () => true,
     update: updateAndDeleteAccess,
   },
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "status", "domain", "openingHours"],
+    hidden: hideUnless("branch"),
   },
   hooks: {
     // Lucky wheel prizes double as voucher reasons ("30% off - from Spin")

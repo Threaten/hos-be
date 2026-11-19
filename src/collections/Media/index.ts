@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
-import { anyone, isAnyTenantAdmin } from '@/access/roles'
+import { anyone } from '@/access/roles'
+import { allowAnywhere, hideUnless } from '@/access/permissions'
 
 const Media: CollectionConfig = {
   slug: 'media',
@@ -13,12 +14,12 @@ const Media: CollectionConfig = {
     },
   },
   access: {
-    create: isAnyTenantAdmin,
+    create: allowAnywhere('media', 'create'),
     read: anyone,
-    update: isAnyTenantAdmin,
-    delete: isAnyTenantAdmin,
+    update: allowAnywhere('media', 'update'),
+    delete: allowAnywhere('media', 'delete'),
   },
-  admin: { useAsTitle: 'filename' },
+  admin: { useAsTitle: 'filename', hidden: hideUnless('media') },
   fields: [
     { name: 'alt', type: 'text' },
     { name: 'caption', type: 'text' },

@@ -25,6 +25,10 @@ import { SpinHistory } from "./collections/SpinHistory";
 import { Vouchers } from "./collections/Vouchers";
 import { VoucherReasons } from "./collections/VoucherReasons";
 import { syncSpinReasons } from "./collections/VoucherReasons/syncSpinPrizes";
+import { Roles } from "./collections/Roles";
+import { seedRoles } from "./collections/Roles/seed";
+import { AuditLogs } from "./collections/AuditLogs";
+import { auditLogPlugin } from "./collections/AuditLogs/plugin";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -78,6 +82,8 @@ export default buildConfig({
     SpinHistory,
     Vouchers,
     VoucherReasons,
+    Roles,
+    AuditLogs,
   ],
   globals: [Settings, HomeInformation],
   db: mongooseAdapter({
@@ -91,6 +97,8 @@ export default buildConfig({
   // Bring every branch's spin-prize voucher reasons up to date on start-up
   // (covers prizes that existed before the reasons were linked to the wheel)
   onInit: async (payload) => {
+    // Built-in roles, accounts still on the old fixed roles, stored permissions
+    await seedRoles(payload).catch((err) => payload.logger.error({ err }, "Could not set up roles"));
     const { docs } = await payload.find({ collection: "tenants", pagination: false, depth: 0 });
     for (const tenant of docs) {
       await syncSpinReasons(payload, tenant).catch((err) =>
@@ -134,5 +142,7 @@ export default buildConfig({
       },
       userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
+    // Last, so it sees every collection: records who creates, changes and deletes what
+    auditLogPlugin,
   ],
 });

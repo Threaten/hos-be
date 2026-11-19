@@ -76,6 +76,8 @@ export interface Config {
     'spin-history': SpinHistory;
     vouchers: Voucher;
     'voucher-reasons': VoucherReason;
+    roles: Role;
+    'audit-logs': AuditLog;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -101,6 +103,8 @@ export interface Config {
     'spin-history': SpinHistorySelect<false> | SpinHistorySelect<true>;
     vouchers: VouchersSelect<false> | VouchersSelect<true>;
     'voucher-reasons': VoucherReasonsSelect<false> | VoucherReasonsSelect<true>;
+    roles: RolesSelect<false> | RolesSelect<true>;
+    'audit-logs': AuditLogsSelect<false> | AuditLogsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -163,9 +167,37 @@ export interface User {
   tenants?:
     | {
         tenant: string | Tenant;
-        roles: ('tenant-admin' | 'tenant-viewer')[];
+        /**
+         * What this person does at this branch. Manage roles under People → Roles.
+         */
+        roles: (string | Role)[];
+        /**
+         * Anything ticked here is added to what their roles allow, at this branch only.
+         */
+        permissions?: {
+          reservations?: ('read' | 'create' | 'update' | 'delete')[] | null;
+          vouchers?: ('read' | 'create' | 'update' | 'use' | 'delete')[] | null;
+          voucherReasons?: ('read' | 'create' | 'update' | 'delete')[] | null;
+          contactMessages?: ('read' | 'update' | 'delete')[] | null;
+          spinHistory?: ('read' | 'delete')[] | null;
+          customers?: ('update' | 'delete')[] | null;
+          media?: ('create' | 'update' | 'delete')[] | null;
+          branch?: 'update'[] | null;
+          users?: ('read' | 'create' | 'update' | 'delete')[] | null;
+          roles?: ('read' | 'create' | 'update' | 'delete')[] | null;
+          auditLogs?: 'read'[] | null;
+        };
         id?: string | null;
       }[]
+    | null;
+  permissionsCache?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
   updatedAt: string;
   createdAt: string;
@@ -401,6 +433,40 @@ export interface FolderInterface {
   createdAt: string;
 }
 /**
+ * A role is a set of permissions. Give people roles on their account, under their branch. Changes apply to everyone with the role straight away.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles".
+ */
+export interface Role {
+  id: string;
+  name: string;
+  description?: string | null;
+  /**
+   * Leave empty to offer this role at every branch (super admins only).
+   */
+  branch?: (string | null) | Tenant;
+  /**
+   * Tick what people with this role may do at their branch. Everyone can always change their own password.
+   */
+  permissions?: {
+    reservations?: ('read' | 'create' | 'update' | 'delete')[] | null;
+    vouchers?: ('read' | 'create' | 'update' | 'use' | 'delete')[] | null;
+    voucherReasons?: ('read' | 'create' | 'update' | 'delete')[] | null;
+    contactMessages?: ('read' | 'update' | 'delete')[] | null;
+    spinHistory?: ('read' | 'delete')[] | null;
+    customers?: ('update' | 'delete')[] | null;
+    media?: ('create' | 'update' | 'delete')[] | null;
+    branch?: 'update'[] | null;
+    users?: ('read' | 'create' | 'update' | 'delete')[] | null;
+    roles?: ('read' | 'create' | 'update' | 'delete')[] | null;
+    auditLogs?: 'read'[] | null;
+  };
+  system?: ('branch-admin' | 'staff' | 'viewer') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers".
  */
@@ -478,7 +544,7 @@ export interface Voucher {
    */
   branch?: (string | null) | Tenant;
   /**
-   * Branch admins can cancel a voucher that has not been used.
+   * A voucher that has not been used can be cancelled.
    */
   status: 'active' | 'used' | 'void';
   /**
@@ -526,6 +592,38 @@ export interface VoucherReason {
   branch?: (string | null) | Tenant;
   source?: ('manual' | 'spin') | null;
   spinPrizeId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Who created, changed or deleted what, and when. Entries cannot be edited or removed.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-logs".
+ */
+export interface AuditLog {
+  id: string;
+  action: 'create' | 'update' | 'delete' | 'use';
+  summary?: string | null;
+  resource?: string | null;
+  docTitle?: string | null;
+  docId?: string | null;
+  collectionSlug?: string | null;
+  userName?: string | null;
+  user?: (string | null) | User;
+  branches?: (string | Tenant)[] | null;
+  /**
+   * Each changed field, before → after. Long values are shortened; passwords are never stored.
+   */
+  changes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -590,6 +688,14 @@ export interface PayloadLockedDocument {
         value: string | VoucherReason;
       } | null)
     | ({
+        relationTo: 'roles';
+        value: string | Role;
+      } | null)
+    | ({
+        relationTo: 'audit-logs';
+        value: string | AuditLog;
+      } | null)
+    | ({
         relationTo: 'payload-folders';
         value: string | FolderInterface;
       } | null);
@@ -649,8 +755,24 @@ export interface UsersSelect<T extends boolean = true> {
     | {
         tenant?: T;
         roles?: T;
+        permissions?:
+          | T
+          | {
+              reservations?: T;
+              vouchers?: T;
+              voucherReasons?: T;
+              contactMessages?: T;
+              spinHistory?: T;
+              customers?: T;
+              media?: T;
+              branch?: T;
+              users?: T;
+              roles?: T;
+              auditLogs?: T;
+            };
         id?: T;
       };
+  permissionsCache?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -850,6 +972,51 @@ export interface VoucherReasonsSelect<T extends boolean = true> {
   branch?: T;
   source?: T;
   spinPrizeId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles_select".
+ */
+export interface RolesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  branch?: T;
+  permissions?:
+    | T
+    | {
+        reservations?: T;
+        vouchers?: T;
+        voucherReasons?: T;
+        contactMessages?: T;
+        spinHistory?: T;
+        customers?: T;
+        media?: T;
+        branch?: T;
+        users?: T;
+        roles?: T;
+        auditLogs?: T;
+      };
+  system?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-logs_select".
+ */
+export interface AuditLogsSelect<T extends boolean = true> {
+  action?: T;
+  summary?: T;
+  resource?: T;
+  docTitle?: T;
+  docId?: T;
+  collectionSlug?: T;
+  userName?: T;
+  user?: T;
+  branches?: T;
+  changes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
