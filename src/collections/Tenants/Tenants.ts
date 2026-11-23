@@ -1,5 +1,6 @@
 import type { CollectionConfig, Field } from "payload";
 import { openingHours } from "./openingHours";
+import { guideTab, vietnameseTab } from "./guide";
 
 import {
   FixedToolbarFeature,
@@ -426,6 +427,10 @@ export const Tenants: CollectionConfig = {
             },
           ],
         },
+
+        // ─── Guide & FAQ, Vietnamese page (search) ───────────────────────
+        guideTab,
+        vietnameseTab,
 
         // ─── Visit & contact ─────────────────────────────────────────────
         {

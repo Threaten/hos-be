@@ -343,6 +343,87 @@ export interface Tenant {
    * Optional. The dishes as plain text, shown under the flip book so search engines and screen readers can read the menu. One dish per line as "Name | short description | price" (description and price optional). A line starting with "## " starts a section, e.g. "## Mains".
    */
   menuText?: string | null;
+  guide?: {
+    label?: string | null;
+    title?: string | null;
+    intro?: string | null;
+    /**
+     * Short blocks, e.g. the food, the room, finding us in District 3, booking.
+     */
+    sections?:
+      | {
+          heading?: string | null;
+          /**
+           * Plain text. Leave an empty line between paragraphs.
+           */
+          body?: string | null;
+          linkLabel?: string | null;
+          /**
+           * A page of this site (/menu, /reservation…) or a full address.
+           */
+          linkHref?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    faqTitle?: string | null;
+    /**
+     * Real questions guests ask, with short, factual answers. Also shown to Google as FAQ data.
+     */
+    faq?:
+      | {
+          question?: string | null;
+          answer?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  vi?: {
+    enabled?: boolean | null;
+    /**
+     * About 50–60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * About 120–155 characters.
+     */
+    metaDescription?: string | null;
+    label?: string | null;
+    title?: string | null;
+    intro?: string | null;
+    /**
+     * In Vietnamese: the food, the room, the address in Quận 3, booking.
+     */
+    sections?:
+      | {
+          heading?: string | null;
+          /**
+           * Plain text. Leave an empty line between paragraphs.
+           */
+          body?: string | null;
+          linkLabel?: string | null;
+          /**
+           * A page of this site (/menu, /reservation…) or a full address.
+           */
+          linkHref?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    faqTitle?: string | null;
+    /**
+     * In Vietnamese. Also shown to Google as FAQ data.
+     */
+    faq?:
+      | {
+          question?: string | null;
+          answer?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    bookLabel?: string | null;
+    menuLabel?: string | null;
+    switchLabel?: string | null;
+    englishLabel?: string | null;
+  };
   /**
    * One opening-hours description, shown when the branch is open.
    */
@@ -899,6 +980,61 @@ export interface TenantsSelect<T extends boolean = true> {
         id?: T;
       };
   menuText?: T;
+  guide?:
+    | T
+    | {
+        label?: T;
+        title?: T;
+        intro?: T;
+        sections?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              linkLabel?: T;
+              linkHref?: T;
+              id?: T;
+            };
+        faqTitle?: T;
+        faq?:
+          | T
+          | {
+              question?: T;
+              answer?: T;
+              id?: T;
+            };
+      };
+  vi?:
+    | T
+    | {
+        enabled?: T;
+        metaTitle?: T;
+        metaDescription?: T;
+        label?: T;
+        title?: T;
+        intro?: T;
+        sections?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              linkLabel?: T;
+              linkHref?: T;
+              id?: T;
+            };
+        faqTitle?: T;
+        faq?:
+          | T
+          | {
+              question?: T;
+              answer?: T;
+              id?: T;
+            };
+        bookLabel?: T;
+        menuLabel?: T;
+        switchLabel?: T;
+        englishLabel?: T;
+      };
   openingHours?: T;
   address?: T;
   location?:
