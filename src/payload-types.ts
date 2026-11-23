@@ -337,6 +337,10 @@ export interface Tenant {
       }[]
     | null;
   /**
+   * Optional. The dishes as plain text, shown under the flip book so search engines and screen readers can read the menu. One dish per line as "Name | short description | price" (description and price optional). A line starting with "## " starts a section, e.g. "## Mains".
+   */
+  menuText?: string | null;
+  /**
    * One opening-hours description, shown when the branch is open.
    */
   openingHours?: string | null;
@@ -373,6 +377,31 @@ export interface Tenant {
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
     image?: (string | null) | Media;
+    /**
+     * Optional. What Google shows for each page. Title: about 50–60 characters. Description: about 120–155 characters. Empty fields use a sensible default.
+     */
+    pages?: {
+      menu?: {
+        title?: string | null;
+        description?: string | null;
+      };
+      reservation?: {
+        title?: string | null;
+        description?: string | null;
+      };
+      about?: {
+        title?: string | null;
+        description?: string | null;
+      };
+      contact?: {
+        title?: string | null;
+        description?: string | null;
+      };
+      gallery?: {
+        title?: string | null;
+        description?: string | null;
+      };
+    };
   };
   /**
    * “Temporarily closed” shows “We'll be back soon” everywhere instead of today's hours.
@@ -863,6 +892,7 @@ export interface TenantsSelect<T extends boolean = true> {
         src?: T;
         id?: T;
       };
+  menuText?: T;
   openingHours?: T;
   address?: T;
   location?:
@@ -889,6 +919,40 @@ export interface TenantsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
         image?: T;
+        pages?:
+          | T
+          | {
+              menu?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              reservation?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              about?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              contact?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              gallery?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+            };
       };
   status?: T;
   allowPublicRead?: T;

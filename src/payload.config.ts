@@ -12,6 +12,7 @@ import { isSuperAdmin } from "./access/isSuperAdmin";
 import type { Config } from "./payload-types";
 import { getUserTenantIDs } from "./utilities/getUserTenantIDs";
 import { generateSeoTitle, generateSeoDescription } from "./utilities/seo";
+import { pageSeoField } from "./collections/Tenants/pageSeo";
 
 import { Settings } from "./globals/Settings";
 import HomeInformation from "./globals/HomeInformation";
@@ -123,6 +124,8 @@ export default buildConfig({
       tabbedUI: true,
       generateTitle: generateSeoTitle,
       generateDescription: generateSeoDescription,
+      // Titles and descriptions for the branch's menu, booking, about, contact and gallery pages
+      fields: ({ defaultFields }) => [...defaultFields, pageSeoField],
     }),
     multiTenantPlugin<Config>({
       collections: {},

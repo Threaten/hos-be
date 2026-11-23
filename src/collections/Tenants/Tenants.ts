@@ -414,6 +414,16 @@ export const Tenants: CollectionConfig = {
               },
               fields: [{ name: "src", label: "Image", type: "upload", relationTo: "media", required: true }],
             },
+            {
+              name: "menuText",
+              label: "Menu as text",
+              type: "textarea",
+              admin: {
+                rows: 12,
+                description:
+                  "Optional. The dishes as plain text, shown under the flip book so search engines and screen readers can read the menu. One dish per line as \"Name | short description | price\" (description and price optional). A line starting with \"## \" starts a section, e.g. \"## Mains\".",
+              },
+            },
           ],
         },
 
