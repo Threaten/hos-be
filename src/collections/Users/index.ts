@@ -95,7 +95,13 @@ export const Users: CollectionConfig = {
     hidden: hideUnless('users'),
   },
   // Sign-ins last a week from last use, a month at most; see ./sessions.ts
-  auth: { tokenExpiration: SESSION_IDLE_SECONDS, useSessions: true },
+  auth: {
+    tokenExpiration: SESSION_IDLE_SECONDS,
+    useSessions: true,
+    // Lets an account such as "SEO Agent" call the API with a key instead of a password.
+    // A request with the key gets exactly that account's roles and branches.
+    useAPIKey: true,
+  },
   endpoints: [externalUsersLogin],
   fields: [
     {
