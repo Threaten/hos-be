@@ -340,7 +340,11 @@ export interface Tenant {
       }[]
     | null;
   /**
-   * Optional. The dishes as plain text, shown under the flip book so search engines and screen readers can read the menu. One dish per line as "Name | short description | price" (description and price optional). A line starting with "## " starts a section, e.g. "## Mains".
+   * When a new menu file or new menu pages are saved, the dishes are read from them into "Menu as text" below, replacing what is there. It takes a minute or two after saving: reload the page to see it. Untick to write the text yourself.
+   */
+  menuTextAuto?: boolean | null;
+  /**
+   * The dishes as text, shown in the "Text" tab of the Menu page and read by search engines. A line starting with "## " starts a category, e.g. "## Salads"; every other line is one dish as "Name | short description | price" (description and price optional). Check it after it is filled automatically.
    */
   menuText?: string | null;
   guide?: {
@@ -979,6 +983,7 @@ export interface TenantsSelect<T extends boolean = true> {
         src?: T;
         id?: T;
       };
+  menuTextAuto?: T;
   menuText?: T;
   guide?:
     | T
