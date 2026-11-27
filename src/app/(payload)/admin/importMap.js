@@ -36,10 +36,13 @@ import { default as default_fbe3fe61d3200a2ad5bac6e3f8dd116a } from '@/collectio
 import { VoucherShare as VoucherShare_4c85ffd5c5f6ee3b54cda48b5d589e4e } from '@/collections/Vouchers/VoucherShare'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { Logos as Logos_6c8490617bef60039b781082d4fedeae } from '@/graphics/Logo/index.tsx'
+import { SeoNav as SeoNav_b383dbddb6a0f5edccbeb78a3658ae51 } from '@/components/admin/seo/SeoNav'
 import { default as default_547a9abcd3ba8b843a141c6f02f909cf } from '@/components/Dashboard/TodaysReservationsWidget'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { SessionKeeper as SessionKeeper_6886f47a630286593a9aa97c1a32d297 } from '@/components/SessionKeeper'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { SeoTodosView as SeoTodosView_ff979cac49ed4a8c2626a10aa47b5368 } from '@/components/admin/seo/SeoTodosView'
+import { SeoCompetitorsView as SeoCompetitorsView_adcafdcebd76ecacd33adcb264128d58 } from '@/components/admin/seo/SeoCompetitorsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -82,9 +85,12 @@ export const importMap = {
   "@/collections/Vouchers/VoucherShare#VoucherShare": VoucherShare_4c85ffd5c5f6ee3b54cda48b5d589e4e,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/graphics/Logo/index.tsx#Logos": Logos_6c8490617bef60039b781082d4fedeae,
+  "@/components/admin/seo/SeoNav#SeoNav": SeoNav_b383dbddb6a0f5edccbeb78a3658ae51,
   "@/components/Dashboard/TodaysReservationsWidget#default": default_547a9abcd3ba8b843a141c6f02f909cf,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@/components/SessionKeeper#SessionKeeper": SessionKeeper_6886f47a630286593a9aa97c1a32d297,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
+  "@/components/admin/seo/SeoTodosView#SeoTodosView": SeoTodosView_ff979cac49ed4a8c2626a10aa47b5368,
+  "@/components/admin/seo/SeoCompetitorsView#SeoCompetitorsView": SeoCompetitorsView_adcafdcebd76ecacd33adcb264128d58,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

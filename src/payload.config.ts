@@ -55,6 +55,16 @@ export default buildConfig({
     user: "users",
     components: {
       beforeDashboard: ["@/components/Dashboard/TodaysReservationsWidget"],
+      // SEO group in the sidebar (every logged-in admin user): the nightly SEO agent's to-dos and competitor research.
+      afterNavLinks: ["@/components/admin/seo/SeoNav#SeoNav"],
+      views: {
+        seoTodos: { Component: "@/components/admin/seo/SeoTodosView#SeoTodosView", path: "/seo", exact: true },
+        seoCompetitors: {
+          Component: "@/components/admin/seo/SeoCompetitorsView#SeoCompetitorsView",
+          path: "/seo/competitors",
+          exact: true,
+        },
+      },
       providers: ["@/components/SessionKeeper#SessionKeeper"],
       graphics: {
         Logo: "@/graphics/Logo/index.tsx#Logos",
