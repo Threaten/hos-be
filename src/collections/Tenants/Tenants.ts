@@ -16,7 +16,6 @@ import { isSuperAdminAccess } from "@/access/isSuperAdmin";
 import { updateAndDeleteAccess } from "./access/updateAndDelete";
 import { hideUnless } from "@/access/permissions";
 import { syncSpinReasonsAfterChange } from "../VoucherReasons/syncSpinPrizes";
-import { fillMenuTextAfterChange } from "./menuText";
 
 /**
  * A branch ("home") of House of Senses. Each one is served on its own
@@ -64,8 +63,7 @@ export const Tenants: CollectionConfig = {
   },
   hooks: {
     // Lucky wheel prizes double as voucher reasons ("30% off - from Spin")
-    // Reading a new menu into "Menu as text" runs in the background
-    afterChange: [syncSpinReasonsAfterChange, fillMenuTextAfterChange],
+    afterChange: [syncSpinReasonsAfterChange],
     beforeValidate: [
       ({ data }) => {
         // 0,0 is the default the number inputs fall back to, not a real place
@@ -418,23 +416,13 @@ export const Tenants: CollectionConfig = {
               fields: [{ name: "src", label: "Image", type: "upload", relationTo: "media", required: true }],
             },
             {
-              name: "menuTextAuto",
-              label: "Fill the menu text automatically",
-              type: "checkbox",
-              defaultValue: true,
-              admin: {
-                description:
-                  "When a new menu file or new menu pages are saved, the dishes are read from them into \"Menu as text\" below, replacing what is there. It takes a minute or two after saving: reload the page to see it. Untick to write the text yourself.",
-              },
-            },
-            {
               name: "menuText",
               label: "Menu as text",
               type: "textarea",
               admin: {
                 rows: 16,
                 description:
-                  "The dishes as text, shown in the \"Text\" tab of the Menu page and read by search engines. A line starting with \"## \" starts a category, e.g. \"## Salads\"; every other line is one dish as \"Name | short description | price\" (description and price optional). Check it after it is filled automatically.",
+                  "Optional. The dishes as text, shown in the \"Text\" tab of the Menu page and read by search engines. A line starting with \"## \" starts a category, e.g. \"## Salads\"; every other line is one dish as \"Name | short description | price\" (description and price optional).",
               },
             },
           ],
